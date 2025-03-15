@@ -1,7 +1,6 @@
 
 <template>
   <div>
-    <!-- Sidebar (Somente para Desktop) -->
     <div v-if="!isMobile" class="sidebar">
       <ul class="sidebar-menu">
         <li>
@@ -24,6 +23,12 @@
             <i data-feather="bar-chart-2"></i> <!-- Ícone de Reports -->
           </router-link>
         </li>
+        <li>
+      <router-link to="/admin-adicionar-auditoria" class="sidebar-item" title="Nova Auditoria">
+        <i data-feather="plus-circle"></i> <!-- Ícone de Adicionar -->
+      </router-link>
+    </li>
+
       </ul>
     </div>
 
