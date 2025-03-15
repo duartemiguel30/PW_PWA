@@ -23,7 +23,17 @@ export default {
   },
   methods: {
     login() {
-      alert(`Logging in with: ${this.email}`);
+      const adminEmail = 'admin@admin.com';
+      const adminPassword = '1234';
+
+      if (this.email === adminEmail && this.password === adminPassword) {
+        // Salva no localStorage a informação de que o usuário é admin
+        localStorage.setItem('isAdmin', true);
+        // Redireciona para o painel de admin
+        this.$router.push('/admin-dashboard');
+      } else {
+        alert('Credenciais inválidas!');
+      }
     },
   },
 };
@@ -62,7 +72,7 @@ input {
 button {
   width: 100%;
   padding: 10px;
-  background:rgb(41, 95, 4);
+  background: rgb(41, 95, 4);
   color: white;
   border: none;
   border-radius: 5px;
@@ -107,7 +117,6 @@ p {
 
 /* Desktop layout */
 @media (min-width: 769px) {
-
   .auth-right {
     background-image: url('/src/assets/slider-image.jpg');
     background-size: cover;

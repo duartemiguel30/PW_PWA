@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Login.vue';
 import Register from '../components/Register.vue';
+import AdminDashboard from '../views/AdminDashboard.vue';  // Verifique o caminho correto da view
 
 const routes = [
-  { path: '/', redirect: '/login' },
-  { path: '/login', component: Login },
-  { path: '/register', component: Register },
+  { path: '/', redirect: '/login' },  // Redireciona para /login
+  { path: '/login', component: Login },  // Rota para login
+  { path: '/register', component: Register },  // Rota para registro
+  { path: '/admin-dashboard', component: AdminDashboard },  
 ];
 
 const router = createRouter({
