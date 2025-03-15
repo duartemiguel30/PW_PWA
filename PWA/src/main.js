@@ -6,7 +6,6 @@ import 'bootstrap';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTachometerAlt, faUsers, faCogs, faChartLine } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 
 // Adicionar os ícones à biblioteca

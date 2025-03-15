@@ -46,6 +46,9 @@
       <router-link to="/admin-reports" class="bottom-item" title="Reports">
         <i data-feather="bar-chart-2"></i> <!-- Ícone de Reports -->
       </router-link>
+      <router-link to="/admin-adicionar-auditoria" class="sidebar-item" title="Nova Auditoria">
+        <i data-feather="plus-circle"></i> <!-- Ícone de Adicionar -->
+      </router-link>
     </div>
   </div>
 </template>
@@ -116,6 +119,7 @@ export default {
   display: flex;
   justify-content: space-around;
   padding: 1rem 0;
+  z-index: 9999;
 }
 
 .bottom-item {
