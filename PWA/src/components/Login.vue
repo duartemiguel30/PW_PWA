@@ -83,7 +83,6 @@ p {
   margin-top: 10px;
 }
 
-/* Mobile layout */
 @media (max-width: 768px) {
   .auth-container {
     flex-direction: column;
@@ -115,7 +114,6 @@ p {
   }
 }
 
-/* Desktop layout */
 @media (min-width: 769px) {
   .auth-right {
     background-image: url('/src/assets/slider-image.jpg');

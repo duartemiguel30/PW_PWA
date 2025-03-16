@@ -269,7 +269,6 @@ export default {
   height: 20px;
 }
 
-/* Formulário de edição */
 .edit-form {
     color: #ffffff;
 margin-top: 1rem;

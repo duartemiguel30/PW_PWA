@@ -81,7 +81,6 @@ p {
   margin-top: 10px;
 }
 
-/* Mobile layout */
 @media (max-width: 768px) {
   .auth-container {
     flex-direction: column;
@@ -113,7 +112,6 @@ p {
   }
 }
 
-/* Desktop layout */
 @media (min-width: 769px) {
   .auth-left {
     background-size: cover;

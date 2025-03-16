@@ -76,11 +76,10 @@ export default {
 </script>
 
 <style scoped>
-/* Sidebar (Desktop) */
 .sidebar {
-  width: 80px; /* Aumentei um pouco para melhor visualização */
+  width: 80px; 
   height: 100vh;
-  background-color: rgba(2, 59, 28, 0.68);/* Alterado para verde */
+  background-color: rgba(2, 59, 28, 0.68);
   color: white;
   position: fixed;
   top: 0;
@@ -103,15 +102,15 @@ export default {
   padding: 1rem;
   color: white;
   text-decoration: none;
-  font-size: 2rem; /* Ícones um pouco maiores */
+  font-size: 2rem; 
 }
 
-/* Bottom Bar (Mobile) */
+
 .bottom-bar {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background-color: rgba(2, 59, 28, 0.68); /* Alterado para verde */
+  background-color: rgba(2, 59, 28, 0.68); 
   display: flex;
   justify-content: space-around;
   padding: 1rem 0;
@@ -121,7 +120,7 @@ export default {
 .bottom-item {
   color: white;
   text-decoration: none;
-  font-size: 2rem; /* Ícones um pouco maiores */
+  font-size: 2rem; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -131,7 +130,6 @@ export default {
   color: #aaa;
 }
 
-/* Esconder a sidebar no mobile */
 @media (max-width: 768px) {
   .sidebar {
     display: none;

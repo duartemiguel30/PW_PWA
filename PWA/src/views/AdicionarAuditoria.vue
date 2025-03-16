@@ -198,15 +198,13 @@ export default {
   box-sizing: border-box;
 }
 
-/* Container principal */
 .container {
   display: flex;
   height: 100vh;
 }
 
-/* Sidebar (Desktop) */
 .sidebar {
-  width: 80px; /* Largura da sidebar */
+  width: 80px; 
   height: 100vh;
   background-color: #333;
   color: white;
@@ -232,16 +230,15 @@ export default {
   padding: 1rem;
   color: white;
   text-decoration: none;
-  font-size: 2rem; /* Ícones maiores */
+  font-size: 2rem; 
 }
 
 .sidebar-item:hover {
   background-color: #444;
 }
 
-/* Formulário da página (contêiner principal) */
 .form-container {
-  margin-left: 80px; /* Espaço para a sidebar */
+  margin-left: 80px; 
   flex: 1;
   padding: 2rem;
   display: flex;
@@ -255,13 +252,12 @@ h2 {
   margin-bottom: 1rem;
 }
 
-/* Estilos do formulário */
 form {
   width: 100%;
-  max-width: 600px; /* Largura do formulário */
+  max-width: 600px; 
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Espaçamento entre os campos */
+  gap: 1.5rem; 
 }
 
 label {
@@ -300,7 +296,6 @@ button:hover {
   text-decoration: underline;
 }
 
-/* Estilos da lista de materiais (Checkboxes) */
 .material-list input {
   margin-right: 10px;
 }
@@ -309,7 +304,6 @@ button:hover {
   font-size: 1rem;
 }
 
-/* Barra inferior (Mobile) */
 .bottom-bar {
   display: flex;
   justify-content: space-around;
@@ -331,16 +325,15 @@ button:hover {
   color: #aaa;
 }
 
-/* Estilos para esconder a sidebar em telas menores */
 @media (max-width: 768px) {
   .sidebar {
     display: none;
   }
 
   .form-container {
-    margin-left: 0; /* Remove o espaço para a sidebar */
-    padding: 1rem; /* Ajusta o padding */
-    width: 100%; /* Faz o formulário ocupar toda a largura */
+    margin-left: 0; 
+    padding: 1rem; 
+    width: 100%; 
   }
 
   .bottom-bar {

@@ -79,13 +79,13 @@ export default {
   margin-left: 7rem;
   padding: 1.5rem;
   flex: 1;
-  max-width: 75rem; /* Aproximadamente 1200px */
+  max-width: 75rem;
 }
 
 .audit-list {
   display: grid;
   margin-top: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(18.75rem, 1fr)); /* 300px -> 18.75rem */
+  grid-template-columns: repeat(auto-fill, minmax(18.75rem, 1fr)); 
   gap: 1.5rem;
   justify-content: flex-start;
 }
@@ -101,7 +101,7 @@ export default {
   text-decoration: underline;
 }
 
-@media (max-width: 48rem) { /* 768px -> 48rem */
+@media (max-width: 48rem) {
   .dashboard-container {
     flex-direction: column;
   }
