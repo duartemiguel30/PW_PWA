@@ -80,7 +80,7 @@ export default {
 .sidebar {
   width: 80px; /* Aumentei um pouco para melhor visualização */
   height: 100vh;
-  background-color: #333;
+  background-color: rgba(2, 59, 28, 0.68);/* Alterado para verde */
   color: white;
   position: fixed;
   top: 0;
@@ -106,16 +106,12 @@ export default {
   font-size: 2rem; /* Ícones um pouco maiores */
 }
 
-.sidebar-item:hover {
-  background-color: #444;
-}
-
 /* Bottom Bar (Mobile) */
 .bottom-bar {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background-color: #333;
+  background-color: rgba(2, 59, 28, 0.68); /* Alterado para verde */
   display: flex;
   justify-content: space-around;
   padding: 1rem 0;

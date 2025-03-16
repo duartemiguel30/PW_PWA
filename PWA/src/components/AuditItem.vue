@@ -52,10 +52,9 @@
       </div>
     </div>
 
-    <!-- Componente de Edição -->
     <div v-if="isEditing">
       <div class="edit-form">
-        <h5>Editar Auditoria</h5>
+        <h6 style="color: black;">Editar Auditoria</h6>
         <input type="text" v-model="editData.peritoPrincipal" placeholder="Nome do perito principal" />
         <input type="text" v-model="editData.peritosAdicionaisInput" placeholder="Peritos Adicionais (separados por vírgula)" />
         <input type="date" v-model="editData.dataInicio" placeholder="Data de Início" />
@@ -178,22 +177,19 @@ export default {
 }
 </script>
 
-
-
-
 <style scoped>
 .audit-item {
-  display: flex;
-  flex-direction: column;
-  max-width: 300px;
-  margin: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  background-color: #fff;
-  transition: transform 0.3s ease;
-  padding: 15px;
-  position: relative;
+    background: rgba(175, 149, 4, 0.42);
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    padding: 15px;
+    position: relative;
 }
 
 .audit-item:hover {
@@ -220,6 +216,7 @@ export default {
 
 .header {
   display: flex;
+  
   justify-content: space-between;
   align-items: center;
 }
@@ -227,13 +224,13 @@ export default {
 .title {
   font-size: 1.2em;
   font-weight: bold;
-  color: #333;
   margin: 0;
 }
 
 .actions {
+    
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .edit-btn {
@@ -244,12 +241,12 @@ export default {
 }
 
 .edit-btn i {
-  width: 20px;
-  height: 20px;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .delete-btn {
-  background-color: red;
+  background-color: rgba(209, 2, 2, 0.66);
   color: white;
   border: none;
   padding: 10px;
@@ -272,75 +269,9 @@ export default {
   height: 20px;
 }
 
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  max-width: 300px;
-}
-
-.modal-input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-}
-
-.cancel-btn,
-.confirm-btn {
-    padding: 0.6rem;
-    width: 45%;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 0.7rem; 
-}
-
-.modal-actions .confirm-btn:last-child {
-    margin-right: 0; 
-}
-
-.cancel-btn {
-  background-color: #ccc;
-}
-
-.confirm-btn {
-  background-color: green;
-  color: white;
-}
-
-.cancel-btn:hover {
-  background-color: #bbb;
-}
-
-.confirm-btn:hover {
-  background-color: darkgreen;
-}
-
 /* Formulário de edição */
 .edit-form {
+    color: #ffffff;
 margin-top: 1rem;
   display: flex;
   flex-direction: column;

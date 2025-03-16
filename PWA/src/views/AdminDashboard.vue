@@ -2,8 +2,6 @@
   <div class="dashboard-container">
     <SidebarMenu />
     <div class="dashboard-content">
-      <h2>Painel de Peritos</h2>
-      <h4>Lista de auditorias ativas</h4>
 
       <div v-if="auditoriasData.length === 0" class="no-audit-message">
         Nenhuma auditoria ativa. <router-link to="/admin-adicionar-auditoria">Adicione uma agora!</router-link>
