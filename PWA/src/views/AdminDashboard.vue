@@ -3,8 +3,8 @@
     <SidebarMenu />
     <div class="dashboard-content">
 
-      <div v-if="auditoriasData.length === 0" class="no-audit-message">
-        Nenhuma auditoria ativa. <router-link to="/admin-adicionar-auditoria">Adicione uma agora!</router-link>
+      <div v-if="auditoriasData.length === 0" class="no-audit-message" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+        Nenhuma auditoria ativa. <router-link to="/admin-adicionar-auditoria" style="color: black;">Adiciona uma aqui.</router-link>
       </div>
 
       <div class="audit-list">

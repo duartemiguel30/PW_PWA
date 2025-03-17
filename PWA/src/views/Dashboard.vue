@@ -6,7 +6,7 @@
       <div v-if="auditoriasData.length === 0" class="no-audit-message text-center mt-4">
         Nenhuma auditoria ativa. 
         <router-link to="/admin-adicionar-auditoria" class="text-decoration-none text-primary">
-          Adicione uma agora!
+          Adiciona uma aqui!
         </router-link>
       </div>
         

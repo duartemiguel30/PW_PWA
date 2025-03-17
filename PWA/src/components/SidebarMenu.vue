@@ -29,7 +29,7 @@
       <router-link to="/admin-dashboard" class="bottom-item" title="Dashboard">
         <i data-feather="activity"></i>
       </router-link>
-      <router-link to="/admin-reports" class="bottom-item" title="Reports">
+      <router-link to="/dashboard" class="bottom-item" title="Reports">
         <i data-feather="bar-chart-2"></i>
       </router-link>
       <router-link to="/admin-adicionar-auditoria" class="sidebar-item" title="Nova Auditoria">

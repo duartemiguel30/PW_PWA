@@ -120,17 +120,15 @@ export default {
   },
   methods: {
     guardarAuditoria() {
-  // Gerar um id único para a auditoria
-  const id = Date.now(); // Usando Date.now() para gerar um id único com base no tempo
+  const id = Date.now(); 
 
   this.novaAuditoria.peritosAdicionais = this.peritosAdicionaisInput
     ? this.peritosAdicionaisInput.split(",").map(item => item.trim())
     : [];
   this.novaAuditoria.materialNecessario = this.materiaisSelecionados;
   this.novaAuditoria.custoEstimado = parseFloat(this.orcamentoEstimado);
-  this.novaAuditoria.id = id; // Atribui o id gerado
+  this.novaAuditoria.id = id; 
 
-  // Determinar o status da auditoria
   if (this.novaAuditoria.dataFim && this.novaAuditoria.horaTermino) {
     this.novaAuditoria.status = "terminada";
   } else {
@@ -174,7 +172,7 @@ export default {
   flex-direction: column;
   align-items: center;
   overflow-y: auto;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
 }
 
 h2 {
@@ -236,4 +234,30 @@ button:hover {
   background-color: rgba(220, 20, 60, 0.2);
   border-left: 5px solid crimson;
 }
-</style>
+
+@media (max-width: 768px) {
+  .form-container {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    padding: 1rem;
+    }
+
+    form {
+      width: 90%;
+      max-width: 100%;
+    }
+    }
+
+    @media (min-width: 769px) {
+    .form-container {
+      margin-left: 120px; 
+    }
+    }
+
+    .form-container {
+    padding-bottom: 80px; 
+    }
+  </style>

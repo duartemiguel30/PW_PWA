@@ -38,10 +38,8 @@ export default {
         password: this.password,
       };
 
-      // Obter os utilizadores existentes no localStorage
       const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
 
-      // Verificar se o utilizador já existe
       const userExists = existingUsers.find(u => u.email === this.email);
 
       if (userExists) {

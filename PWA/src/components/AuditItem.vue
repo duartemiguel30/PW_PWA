@@ -208,7 +208,7 @@ export default {
 }
 
 .audit-complete {
-  background-color: rgba(150, 35, 0, 0.6); /* cor verde para "terminada" */
+  background-color: rgba(150, 35, 0, 0.6);
 }
 
 .image-container {
