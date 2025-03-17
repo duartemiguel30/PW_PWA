@@ -22,27 +22,29 @@ export default {
     };
   },
   methods: {
-    login() {
-      const adminEmail = 'admin@admin.com';
-      const adminPassword = '1234';
+  login() {
+    const adminEmail = 'admin@admin.com';
+    const adminPassword = '1234';
 
-      if (this.email === adminEmail && this.password === adminPassword) {
-        localStorage.setItem('isAdmin', true);
-        this.$router.push('/admin-dashboard');
-        return;
-      }
+    if (this.email === adminEmail && this.password === adminPassword) {
+      localStorage.setItem('isAuthenticated', true); 
+      localStorage.setItem('isAdmin', true); 
+      this.$router.push('/admin-dashboard');
+      return;
+    }
 
-      const users = JSON.parse(localStorage.getItem('users')) || [];
-      const user = users.find(u => u.email === this.email && u.password === this.password);
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const user = users.find(u => u.email === this.email && u.password === this.password);
 
-      if (user) {
-        alert("Login bem-sucedido!");
-        this.$router.push('/admin-dashboard');
-      } else {
-        alert('Credenciais inválidas!');
-      }
-    },
+    if (user) {
+      localStorage.setItem('isAuthenticated', true); 
+      alert("Login bem-sucedido!");
+      this.$router.push('/admin-dashboard'); 
+    } else {
+      alert('Credenciais inválidas!');
+    }
   },
+}
 };
 </script>
 
@@ -135,7 +137,7 @@ p {
     background-color: rgba(255, 255, 255, 0.8);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     position: relative;
     z-index: 10;
   }
