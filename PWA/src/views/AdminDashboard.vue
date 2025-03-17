@@ -33,7 +33,6 @@ export default {
   },
   methods: {
     carregarAuditorias() {
-      // Apenas carregar auditorias se já existirem no localStorage
       this.auditoriasData = JSON.parse(localStorage.getItem("auditorias")) || [];
     }
   }

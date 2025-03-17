@@ -1,10 +1,8 @@
 <template>
   <div class="dashboard-container">
-    <!-- Sidebar -->
     <SidebarMenu />
     
     <div class="dashboard-content">
-      <!-- Mensagem caso não haja auditorias -->
       <div v-if="auditoriasData.length === 0" class="no-audit-message text-center mt-4">
         Nenhuma auditoria ativa. 
         <router-link to="/admin-adicionar-auditoria" class="text-decoration-none text-primary">
@@ -16,7 +14,7 @@
         <div class="col-md-4">
           <div class="card text-bg-primary mb-3">
             <div class="card-body">
-              <h5 class="card-title">Total de Auditorias</h5>
+              <h6 class="card-title">Total de Auditorias</h6>
               <p class="display-6">{{ totalAuditorias }}</p>
             </div>
           </div>
@@ -24,7 +22,7 @@
         <div class="col-md-4">
           <div class="card text-bg-warning mb-3">
             <div class="card-body">
-              <h5 class="card-title">Abertas</h5>
+              <h6 class="card-title">Abertas</h6>
               <p class="display-6">{{ auditoriasAbertas }}</p>
             </div>
           </div>
@@ -32,7 +30,7 @@
         <div class="col-md-4">
           <div class="card text-bg-success mb-3">
             <div class="card-body">
-              <h5 class="card-title">Terminadas</h5>
+              <h6 class="card-title">Terminadas</h6>
               <p class="display-6">{{ auditoriasTerminadas }}</p>
             </div>
           </div>
@@ -41,7 +39,7 @@
         <div class="col-md-6">
           <div class="card text-bg-info mb-3">
             <div class="card-body">
-              <h5 class="card-title">Utilizadores registados</h5>
+              <h6 class="card-title">Utilizadores registados</h6>
               <p class="display-6">{{ totalUtilizadores }}</p>
             </div>
           </div>
@@ -49,14 +47,13 @@
         <div class="col-md-6">
           <div class="card text-bg-danger mb-3">
             <div class="card-body">
-              <h5 class="card-title">Faturação Total (€)</h5>
+              <h6 class="card-title">Faturação Total (€)</h6>
               <p class="display-6">{{ faturacaoTotal.toFixed(2) }}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Gráficos -->
       <div class="row mt-4">
         <div class="col-md-6">
           <div class="card">
@@ -90,32 +87,32 @@ export default {
 
   data() {
     return {
-      auditoriasData: [], // Dados das auditorias
-      totalUtilizadores: 0, // Total de utilizadores registados
-      faturacaoTotal: 0, // Faturação total calculada com base nas auditorias
+      auditoriasData: [], 
+      totalUtilizadores: 0, 
+      faturacaoTotal: 0, 
     };
   },
 
   computed: {
     totalAuditorias() {
-      return this.auditoriasData.length; // Total de auditorias
+      return this.auditoriasData.length; 
     },
     auditoriasAbertas() {
-      return this.auditoriasData.filter(a => a.status === "aberta").length; // Auditorias abertas
+      return this.auditoriasData.filter(a => a.status === "aberta").length; 
     },
     auditoriasTerminadas() {
-      return this.auditoriasData.filter(a => a.status === "terminada").length; // Auditorias terminadas
+      return this.auditoriasData.filter(a => a.status === "terminada").length; 
     }
   },
 
   mounted() {
-    this.carregarDados();  // Carregar os dados no carregamento inicial
+    this.carregarDados(); 
   },
 
   methods: {
     carregarDados() {
       const auditoriasSalvas = JSON.parse(localStorage.getItem("auditorias")) || [];
-      console.log("Auditorias carregadas:", auditoriasSalvas); // Verificar no console
+      console.log("Auditorias carregadas:", auditoriasSalvas);
 
       this.auditoriasData = auditoriasSalvas; 
       this.totalUtilizadores = (JSON.parse(localStorage.getItem("users")) || []).length;
@@ -125,7 +122,6 @@ export default {
     },
 
     mostrarGraficos() {
-      // Gráfico de auditorias
       if (this.$refs.auditoriasChart) {
         new Chart(this.$refs.auditoriasChart.getContext("2d"), {
           type: "bar",
@@ -140,7 +136,6 @@ export default {
         });
       }
 
-      // Gráfico de faturação
       if (this.$refs.faturacaoChart) {
         new Chart(this.$refs.faturacaoChart.getContext("2d"), {
           type: "line",
@@ -168,15 +163,23 @@ export default {
 }
 
 .dashboard-content {
-  margin-left: 7rem;
-  padding: 1.5rem;
-  flex: 1;
-  max-width: calc(100% - 7rem);
-  overflow-x: hidden;
-  margin: 0 auto;
+    padding: 1.5rem;
+    flex: 1;
+    max-width: calc(100% - 12rem);
+    overflow-x: hidden;
+    margin: 0 auto;
+}
+
+.card-title {
+  margin-bottom: 0.5rem; 
+}
+
+.display-6 {
+  margin-top: 0.5rem; 
 }
 
 .card-body {
+  gap: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,7 +217,7 @@ canvas {
   }
 
   .dashboard-content {
-    margin-left: 0;
+    margin-left: 2rem;  
     padding: 1rem;
     width: 90%;
     margin: 0 auto;

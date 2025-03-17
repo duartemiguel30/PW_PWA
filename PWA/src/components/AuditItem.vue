@@ -8,7 +8,6 @@
         <div class="header">
             <h2 class="title">{{ auditoria.peritoPrincipal }}</h2>
             <div class="actions">
-                <!-- Botão de edição só aparece se o status não for "terminada" -->
                 <button v-if="auditoria.status !== 'terminada'" class="edit-btn" @click="toggleEditForm(auditoria.id)">
                     <i data-feather="edit"></i>
                 </button>
@@ -37,7 +36,6 @@
         </div>
     </div>
 
-    <!-- Botão de "Concluir" só aparece se o status não for "terminada" -->
     <button v-if="auditoria.status !== 'terminada'" class="delete-btn" @click="showConfirmModal = true">
         <i data-feather="check-circle"></i> Concluir
     </button>
@@ -164,7 +162,6 @@ export default {
       }
     },
     completeAudit(id) {
-      // Atualiza o status para 'terminada'
       let auditorias = JSON.parse(localStorage.getItem('auditorias')) || [];
       const index = auditorias.findIndex(auditoria => auditoria.id === id);
 
@@ -174,7 +171,7 @@ export default {
       }
 
       this.showConfirmModal = false;
-      this.$emit('update', auditorias[index]); // Emitir o evento com os dados atualizados
+      this.$emit('update', auditorias[index]); 
     }
   },
   mounted() {
