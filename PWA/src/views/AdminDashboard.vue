@@ -17,7 +17,6 @@
 <script>
 import SidebarMenu from '@/components/SidebarMenu.vue';
 import AuditItem from '@/components/AuditItem.vue';
-import auditImage from '@/assets/audit.jpg'; 
 
 export default {
   components: {
@@ -34,35 +33,8 @@ export default {
   },
   methods: {
     carregarAuditorias() {
-
-      const auditoriasguardadas = JSON.parse(localStorage.getItem("auditorias")) || [];
-      
-      if (auditoriasguardadas.length === 0) {
-        this.auditoriasData = [
-          {
-            imagem: auditImage,
-            peritoPrincipal: 'João Silva',
-            dataInicio: '2025-03-01',
-            dataFim: '2025-03-05',
-            peritosAdicionais: ['Maria Souza', 'Carlos Pereira'],
-            materialNecessario: ['Laptop', 'Documentos de referência'],
-            custoEstimado: 1500.00
-          },
-          {
-            imagem: auditImage,
-            peritoPrincipal: 'Ana Oliveira',
-            dataInicio: '2025-03-10',
-            dataFim: '2025-03-15',
-            peritosAdicionais: ['Lucas Costa'],
-            materialNecessario: ['Projetor', 'Relatório'],
-            custoEstimado: 1200.50
-          }
-        ];
-
-        localStorage.setItem("auditorias", JSON.stringify(this.auditoriasData));
-      } else {
-        this.auditoriasData = auditoriasguardadas;
-      }
+      // Apenas carregar auditorias se já existirem no localStorage
+      this.auditoriasData = JSON.parse(localStorage.getItem("auditorias")) || [];
     }
   }
 };

@@ -12,8 +12,8 @@
         <label>Data de Início:</label>
         <input v-model="novaAuditoria.dataInicio" type="date" required />
 
-        <label>Data de Fim:</label>
-        <input v-model="novaAuditoria.dataFim" type="date" required />
+        <label>Data de Fim (opcional):</label>
+        <input v-model="novaAuditoria.dataFim" type="date" />
 
         <label>Hora de Chegada:</label>
         <input v-model="novaAuditoria.horaChegada" type="time" required />
@@ -65,7 +65,6 @@ export default {
   },
   data() {
     return {
-      isMobile: window.innerWidth <= 768,
       novaAuditoria: {
         peritoPrincipal: "",
         dataInicio: "",
@@ -91,13 +90,6 @@ export default {
         { nome: "Formulários", preco: 69 }
       ]
     };
-  },
-  mounted() {
-    window.addEventListener("resize", this.checkIfMobile);
-    feather.replace(); 
-  },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.checkIfMobile);
   },
   computed: {
     orcamentoEstimado() {
@@ -127,36 +119,43 @@ export default {
     }
   },
   methods: {
-    checkIfMobile() {
-      this.isMobile = window.innerWidth <= 768;
-    },
     guardarAuditoria() {
-    this.novaAuditoria.peritosAdicionais = this.peritosAdicionaisInput
-      ? this.peritosAdicionaisInput.split(",").map(item => item.trim())
-      : [];
-    this.novaAuditoria.materialNecessario = this.materiaisSelecionados;
+  // Gerar um id único para a auditoria
+  const id = Date.now(); // Usando Date.now() para gerar um id único com base no tempo
 
-    this.novaAuditoria.custoEstimado = this.orcamentoEstimado; 
+  this.novaAuditoria.peritosAdicionais = this.peritosAdicionaisInput
+    ? this.peritosAdicionaisInput.split(",").map(item => item.trim())
+    : [];
+  this.novaAuditoria.materialNecessario = this.materiaisSelecionados;
+  this.novaAuditoria.custoEstimado = parseFloat(this.orcamentoEstimado);
+  this.novaAuditoria.id = id; // Atribui o id gerado
 
-    let auditorias = JSON.parse(localStorage.getItem("auditorias")) || [];
-    auditorias.push(this.novaAuditoria);
-    localStorage.setItem("auditorias", JSON.stringify(auditorias));
+  // Determinar o status da auditoria
+  if (this.novaAuditoria.dataFim && this.novaAuditoria.horaTermino) {
+    this.novaAuditoria.status = "terminada";
+  } else {
+    this.novaAuditoria.status = "aberta";
+  }
 
-    alert("Auditoria adicionada com sucesso!");
-    this.$router.push("/admin-dashboard");
-  },
+  let auditorias = JSON.parse(localStorage.getItem("auditorias")) || [];
+  auditorias.push(this.novaAuditoria);
+  localStorage.setItem("auditorias", JSON.stringify(auditorias));
 
-  handleImageUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.novaAuditoria.imagem = reader.result;
-      };
-      reader.readAsDataURL(file);
+  alert("Auditoria adicionada com sucesso!");
+  this.$router.push("/admin-dashboard");
+},
+
+    handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.novaAuditoria.imagem = reader.result;
+        };
+        reader.readAsDataURL(file);
+      }
     }
   }
-}
 };
 </script>
 
@@ -167,47 +166,8 @@ export default {
   box-sizing: border-box;
 }
 
-.container {
-  display: flex;
-  height: 100vh;
-}
-
-.sidebar {
-  width: 80px; 
-  height: 100vh;
-  background-color: #333;
-  color: white;
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 1rem;
-  z-index: 100;
-}
-
-.sidebar-menu {
-  list-style-type: none;
-  padding: 0;
-}
-
-.sidebar-item {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-  color: white;
-  text-decoration: none;
-  font-size: 2rem; 
-}
-
-.sidebar-item:hover {
-  background-color: #444;
-}
-
 .form-container {
-  margin-left: 80px; 
+  margin-left: 80px;
   flex: 1;
   padding: 2rem;
   display: flex;
@@ -223,18 +183,17 @@ h2 {
 
 form {
   width: 100%;
-  max-width: 600px; 
+  max-width: 600px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; 
+  gap: 1.5rem;
 }
 
 label {
   font-weight: bold;
 }
 
-input,
-select {
+input {
   padding: 0.5rem;
   font-size: 1rem;
   border: 1px solid #ccc;
@@ -258,7 +217,7 @@ button:hover {
 .back-link {
   margin-top: 1rem;
   text-decoration: none;
-  color:rgb(41, 95, 4);
+  color: rgb(41, 95, 4);
 }
 
 .back-link:hover {
@@ -273,44 +232,8 @@ button:hover {
   font-size: 1rem;
 }
 
-.bottom-bar {
-  display: flex;
-  justify-content: space-around;
-  background-color: #333;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  padding: 1rem 0;
-  z-index: 100;
-}
-
-.bottom-item {
-  color: white;
-  text-decoration: none;
-  font-size: 2rem;
-}
-
-.bottom-item:hover {
-  color: #aaa;
-}
-
-@media (max-width: 768px) {
-  .sidebar {
-    display: none;
-  }
-
-  .form-container {
-    margin-left: 0; 
-    padding: 1rem; 
-    width: 100%; 
-  }
-
-  .bottom-bar {
-    display: flex;
-    justify-content: space-around;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-  }
+.audit-item.terminada {
+  background-color: rgba(220, 20, 60, 0.2);
+  border-left: 5px solid crimson;
 }
 </style>

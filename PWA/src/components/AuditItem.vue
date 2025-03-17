@@ -1,70 +1,73 @@
 <template>
-  <div class="audit-item">
+  <div class="audit-item" :class="{ 'audit-complete': auditoria.status === 'terminada', 'audit-open': auditoria.status === 'aberta' }">
     <div class="image-container">
-      <img :src="auditoria.imagem" alt="Imagem da Auditoria" class="audit-image"/>
+        <img :src="auditoria.imagem" alt="Imagem da Auditoria" class="audit-image"/>
     </div>
 
     <div class="details">
-      <div class="header">
-        <h2 class="title">{{ auditoria.peritoPrincipal }}</h2>
-        <div class="actions">
-          <button class="edit-btn" @click="toggleEditForm">
-            <i data-feather="edit"></i> 
-          </button>
+        <div class="header">
+            <h2 class="title">{{ auditoria.peritoPrincipal }}</h2>
+            <div class="actions">
+                <!-- Botão de edição só aparece se o status não for "terminada" -->
+                <button v-if="auditoria.status !== 'terminada'" class="edit-btn" @click="toggleEditForm(auditoria.id)">
+                    <i data-feather="edit"></i>
+                </button>
+            </div>
         </div>
-      </div>
 
-      <p class="dates">{{ formatDate(auditoria.dataInicio) }} - {{ formatDate(auditoria.dataFim) }}</p>
+        <p class="dates">{{ formatDate(auditoria.dataInicio) }} - {{ formatDate(auditoria.dataFim) }}</p>
 
-      <div class="material">
-        <h5 class="section-title">Material Necessário</h5>
-        <p v-if="auditoria.materialNecessario.length === 0">Nenhum material especificado.</p>
-        <ul v-else>
-          <li v-for="(item, index) in auditoria.materialNecessario" :key="index">{{ item }}</li>
-        </ul>
-      </div>
+        <div class="material">
+            <h5 class="section-title">Material Necessário</h5>
+            <p v-if="auditoria.materialNecessario.length === 0">Nenhum material especificado.</p>
+            <ul v-else>
+                <li v-for="(item, index) in auditoria.materialNecessario" :key="index">{{ item }}</li>
+            </ul>
+        </div>
 
-      <div class="cost">
-        <p><strong>Custo Estimado:</strong> {{ formatCurrency(auditoria.custoEstimado) }}</p>
-      </div>
+        <div class="cost">
+            <p><strong>Custo Estimado:</strong> {{ formatCurrency(auditoria.custoEstimado) }}</p>
+        </div>
 
-      <div class="additional-experts" v-if="auditoria.peritosAdicionais.length > 0">
-        <h5 class="section-title">Peritos Adicionais</h5>
-        <ul>
-          <li v-for="(perito, index) in auditoria.peritosAdicionais" :key="index">{{ perito }}</li>
-        </ul>
-      </div>
+        <div class="additional-experts" v-if="auditoria.peritosAdicionais.length > 0">
+            <h5 class="section-title">Peritos Adicionais</h5>
+            <ul>
+                <li v-for="(perito, index) in auditoria.peritosAdicionais" :key="index">{{ perito }}</li>
+            </ul>
+        </div>
     </div>
 
-    <button class="delete-btn" @click="showConfirmModal = true">
-      <i data-feather="check-circle"></i> Concluir
+    <!-- Botão de "Concluir" só aparece se o status não for "terminada" -->
+    <button v-if="auditoria.status !== 'terminada'" class="delete-btn" @click="showConfirmModal = true">
+        <i data-feather="check-circle"></i> Concluir
     </button>
 
     <div v-if="showConfirmModal" class="alert-overlay">
-      <div class="alert">
-        <p>Tem certeza que deseja excluir esta auditoria? Essa ação não pode ser desfeita.</p>
-        <div class="alert-actions">
-          <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
-          <button class="confirm-btn" @click="confirmDelete">Confirmar</button>
+        <div class="alert">
+            <p>Tem certeza que deseja concluir esta auditoria? Essa ação não pode ser desfeita.</p>
+            <div class="alert-actions">
+                <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
+                <button class="confirm-btn" @click="completeAudit(auditoria.id)">Confirmar</button>
+            </div>
         </div>
-      </div>
     </div>
 
     <div v-if="isEditing">
-      <div class="edit-form">
-        <h6 style="color: black;">Editar Auditoria</h6>
-        <input type="text" v-model="editData.peritoPrincipal" placeholder="Nome do perito principal" />
-        <input type="text" v-model="editData.peritosAdicionaisInput" placeholder="Peritos Adicionais (separados por vírgula)" />
-        <input type="date" v-model="editData.dataInicio" placeholder="Data de Início" />
-        <input type="date" v-model="editData.dataFim" placeholder="Data de Fim" />
-        <input type="number" v-model="editData.custoEstimado" placeholder="Custo Estimado" />
-        <input type="time" v-model="editData.horaSaida" placeholder="Hora de Saída" />
-        <button @click="saveEdit">Guardar Edição</button>
-        <button @click="toggleEditForm">Cancelar</button>
-      </div>
+        <div class="edit-form">
+            <h6 style="color: black;">Editar Auditoria</h6>
+            <input type="text" v-model="editData.peritoPrincipal" placeholder="Nome do perito principal" />
+            <input type="text" v-model="editData.peritosAdicionaisInput" placeholder="Peritos Adicionais (separados por vírgula)" />
+            <input type="date" v-model="editData.dataInicio" placeholder="Data de Início" />
+            <input type="date" v-model="editData.dataFim" placeholder="Data de Fim" />
+            <input type="number" v-model="editData.custoEstimado" placeholder="Custo Estimado" />
+            <input type="time" v-model="editData.horaSaida" placeholder="Hora de Saída" />
+            <button @click="saveEdit(auditoria.id)">Guardar Edição</button>
+            <button @click="toggleEditForm(auditoria.id)">Cancelar</button>
+        </div>
     </div>
-  </div>
+</div>
 </template>
+
 
 <script>
 export default {
@@ -112,13 +115,13 @@ export default {
 
       console.log('Auditoria excluída:', this.auditoria);
     },
-    toggleEditForm() {
+    toggleEditForm(id) {
       this.isEditing = !this.isEditing;
       if (this.isEditing) {
         this.editData = { ...this.auditoria };  
       }
     },
-    saveEdit() {
+    saveEdit(id) {
       try {
         if (this.editData.peritosAdicionaisInput) {
           this.editData.peritosAdicionais = this.editData.peritosAdicionaisInput.split(',').map(perito => perito.trim());
@@ -147,7 +150,7 @@ export default {
         }
 
         let auditorias = JSON.parse(localStorage.getItem('auditorias')) || [];
-        const index = auditorias.findIndex(auditoria => auditoria.id === this.auditoria.id);
+        const index = auditorias.findIndex(auditoria => auditoria.id === id);
 
         if (index !== -1) {
           auditorias[index] = { ...this.editData };  
@@ -159,6 +162,19 @@ export default {
       } catch (error) {
         console.error('Erro ao guardar os dados da auditoria:', error);
       }
+    },
+    completeAudit(id) {
+      // Atualiza o status para 'terminada'
+      let auditorias = JSON.parse(localStorage.getItem('auditorias')) || [];
+      const index = auditorias.findIndex(auditoria => auditoria.id === id);
+
+      if (index !== -1) {
+        auditorias[index].status = 'terminada';
+        localStorage.setItem('auditorias', JSON.stringify(auditorias));
+      }
+
+      this.showConfirmModal = false;
+      this.$emit('update', auditorias[index]); // Emitir o evento com os dados atualizados
     }
   },
   mounted() {
@@ -169,6 +185,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .audit-item {
@@ -187,6 +204,14 @@ export default {
 
 .audit-item:hover {
   transform: scale(1.05);
+}
+
+.audit-open {
+  background-color: rgba(2, 59, 28, 0.68);  
+}
+
+.audit-complete {
+  background-color: rgba(150, 35, 0, 0.6); /* cor verde para "terminada" */
 }
 
 .image-container {
