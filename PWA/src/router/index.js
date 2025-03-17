@@ -3,6 +3,7 @@ import Login from '../components/Login.vue';
 import Register from '../components/Register.vue';
 import AdminDashboard from '../views/AdminDashboard.vue';  
 import AdicionarAuditoria from '@/views/AdicionarAuditoria.vue';
+import Dashboard from '@/views/Dashboard.vue';
 
 
 const routes = [
@@ -10,7 +11,8 @@ const routes = [
   { path: '/login', component: Login },  
   { path: '/register', component: Register },  
   { path: '/admin-dashboard', component: AdminDashboard },  
-  { path: '/admin-adicionar-auditoria', component: AdicionarAuditoria }
+  { path: '/admin-adicionar-auditoria', component: AdicionarAuditoria }, 
+  { path: '/dashboard', component: Dashboard }
 ];
 
 const router = createRouter({

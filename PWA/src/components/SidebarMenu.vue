@@ -9,7 +9,7 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/admin-reports" class="sidebar-item" title="Reports">
+          <router-link to="/Dashboard" class="sidebar-item" title="Reports">
             <i data-feather="bar-chart-2"></i>
           </router-link>
         </li>

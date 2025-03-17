@@ -29,6 +29,15 @@ export default {
       if (this.email === adminEmail && this.password === adminPassword) {
         localStorage.setItem('isAdmin', true);
         this.$router.push('/admin-dashboard');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const user = users.find(u => u.email === this.email && u.password === this.password);
+
+      if (user) {
+        alert("Login bem-sucedido!");
+        this.$router.push('/admin-dashboard');
       } else {
         alert('Credenciais inválidas!');
       }

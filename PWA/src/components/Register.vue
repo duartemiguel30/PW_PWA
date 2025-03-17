@@ -31,7 +31,23 @@ export default {
         alert("Passwords do not match!");
         return;
       }
-      alert(`Registering user: ${this.email}`);
+
+      const user = {
+        name: this.name,
+        email: this.email,
+        password: this.password,
+      };
+
+      const existingUser = JSON.parse(localStorage.getItem("users")) || [];
+      const userExists = existingUser.find(u => u.email === this.email);
+
+      if (userExists) {
+        alert("Este email já está registado!");
+      } else {
+        existingUser.push(user);
+        localStorage.setItem("users", JSON.stringify(existingUser));
+        alert(`Utilizador ${this.name} registado com sucesso!`);
+      }
     },
   },
 };
