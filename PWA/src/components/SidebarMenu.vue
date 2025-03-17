@@ -57,12 +57,12 @@
 export default {
   data() {
     return {
-      isMobile: window.innerWidth <= 768, // Detecta se é mobile (<= 768px)
+      isMobile: window.innerWidth <= 768, 
     };
   },
   mounted() {
     window.addEventListener("resize", this.checkIfMobile);
-    feather.replace(); // Substitui os ícones Feather no DOM
+    feather.replace(); 
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.checkIfMobile);

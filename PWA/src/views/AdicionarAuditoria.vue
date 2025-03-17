@@ -83,12 +83,12 @@
 </template>
 
 <script>
-// Importa o componente Sidebar
-import Sidebar from '@/components/SidebarMenu.vue';  // Ajuste conforme seu caminho
+
+import Sidebar from '@/components/SidebarMenu.vue';  
 
 export default {
   components: {
-    Sidebar  // Registra o componente Sidebar
+    Sidebar 
   },
   data() {
     return {
@@ -115,13 +115,13 @@ export default {
         { nome: "Documentos de referência", preco: 20 },
         { nome: "Planilhas de dados", preco: 10 },
         { nome: "Contrato de serviço", preco: 50 },
-        { nome: "Formulários", preco: 30 }
+        { nome: "Formulários", preco: 69 }
       ]
     };
   },
   mounted() {
     window.addEventListener("resize", this.checkIfMobile);
-    feather.replace(); // Substitui os ícones Feather no DOM
+    feather.replace(); 
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.checkIfMobile);
@@ -130,7 +130,6 @@ export default {
     orcamentoEstimado() {
       let orcamento = 0;
 
-      // Calcula o custo com base nos materiais selecionados
       this.materiaisSelecionados.forEach(material => {
         const materialEncontrado = this.materiais.find(item => item.nome === material);
         if (materialEncontrado) {
@@ -138,19 +137,17 @@ export default {
         }
       });
 
-      // Calcula o custo com base nas horas (5 euros por hora)
       if (this.novaAuditoria.dataInicio && this.novaAuditoria.horaChegada) {
         const dataInicio = new Date(this.novaAuditoria.dataInicio + "T" + this.novaAuditoria.horaChegada);
         let dataFim = new Date(this.novaAuditoria.dataFim + "T" + (this.novaAuditoria.horaTermino || this.novaAuditoria.horaChegada));
         
-        // Se a data de fim não estiver preenchida, usamos a hora atual
         if (isNaN(dataFim.getTime())) {
           dataFim = new Date();
         }
 
-        const diffMs = dataFim - dataInicio; // Diferença em milissegundos
-        const diffHrs = diffMs / (1000 * 3600); // Converte de ms para horas
-        orcamento += diffHrs * 5; // Adiciona 5 euros por hora
+        const diffMs = dataFim - dataInicio;
+        const diffHrs = diffMs / (1000 * 3600); 
+        orcamento += diffHrs * 8; 
       }
 
       return orcamento.toFixed(2);
@@ -166,8 +163,7 @@ export default {
       : [];
     this.novaAuditoria.materialNecessario = this.materiaisSelecionados;
 
-    // Usando a propriedade computada orcamentoEstimado para calcular o custo
-    this.novaAuditoria.custoEstimado = this.orcamentoEstimado; // Aqui está a correção
+    this.novaAuditoria.custoEstimado = this.orcamentoEstimado; 
 
     let auditorias = JSON.parse(localStorage.getItem("auditorias")) || [];
     auditorias.push(this.novaAuditoria);
@@ -274,7 +270,7 @@ select {
 
 button {
   padding: 0.7rem;
-  background-color: rgb(41, 95, 4);
+  background-color: rgba(2, 59, 28, 0.68);
   color: white;
   border: none;
   border-radius: 5px;
@@ -283,7 +279,7 @@ button {
 }
 
 button:hover {
-  background-color:rgb(41, 95, 4);
+  background-color: rgb(12, 49, 1);
 }
 
 .back-link {

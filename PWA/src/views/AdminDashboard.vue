@@ -17,7 +17,7 @@
 <script>
 import SidebarMenu from '@/components/SidebarMenu.vue';
 import AuditItem from '@/components/AuditItem.vue';
-import auditImage from '@/assets/audit.jpg'; // Imagem fictícia
+import auditImage from '@/assets/audit.jpg'; 
 
 export default {
   components: {
@@ -26,19 +26,18 @@ export default {
   },
   data() {
     return {
-      auditoriasData: [] // Array de auditorias que será preenchido
+      auditoriasData: [] 
     };
   },
   mounted() {
-    this.carregarAuditorias(); // Carrega as auditorias quando o componente for montado
+    this.carregarAuditorias(); 
   },
   methods: {
     carregarAuditorias() {
-      // Carrega auditorias do Local Storage
-      const auditoriasSalvas = JSON.parse(localStorage.getItem("auditorias")) || [];
+
+      const auditoriasguardadas = JSON.parse(localStorage.getItem("auditorias")) || [];
       
-      // Adiciona auditorias padrão apenas se ainda não houver dados no Local Storage
-      if (auditoriasSalvas.length === 0) {
+      if (auditoriasguardadas.length === 0) {
         this.auditoriasData = [
           {
             imagem: auditImage,
@@ -59,10 +58,10 @@ export default {
             custoEstimado: 1200.50
           }
         ];
-        // Salva as auditorias no Local Storage para evitar que sumam ao recarregar a página
+
         localStorage.setItem("auditorias", JSON.stringify(this.auditoriasData));
       } else {
-        this.auditoriasData = auditoriasSalvas;
+        this.auditoriasData = auditoriasguardadas;
       }
     }
   }

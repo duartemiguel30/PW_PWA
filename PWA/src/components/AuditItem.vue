@@ -100,18 +100,16 @@ export default {
       return `€${Number(value).toFixed(2)}`;
     },
     confirmDelete() {
-      // Elimina a auditoria do localStorage
       let auditorias = JSON.parse(localStorage.getItem('auditorias')) || [];
       const index = auditorias.findIndex(auditoria => auditoria.id === this.auditoria.id);
 
       if (index !== -1) {
-        auditorias.splice(index, 1);  // Remove a auditoria do array
-        localStorage.setItem('auditorias', JSON.stringify(auditorias));  // Atualiza o localStorage
+        auditorias.splice(index, 1);  
+        localStorage.setItem('auditorias', JSON.stringify(auditorias));  
       }
 
       this.showConfirmModal = false;
 
-      // Emite a auditoria deletada para o componente pai
       this.$emit('delete', this.auditoria);
 
       console.log('Auditoria excluída:', this.auditoria);
@@ -119,19 +117,17 @@ export default {
     toggleEditForm() {
       this.isEditing = !this.isEditing;
       if (this.isEditing) {
-        this.editData = { ...this.auditoria };  // Preenche os campos com os dados atuais
+        this.editData = { ...this.auditoria };  
       }
     },
     saveEdit() {
       try {
-        // Verificar se peritosAdicionaisInput tem um valor válido antes de dividir
         if (this.editData.peritosAdicionaisInput) {
           this.editData.peritosAdicionais = this.editData.peritosAdicionaisInput.split(',').map(perito => perito.trim());
         } else {
-          this.editData.peritosAdicionais = []; // Se não houver valor, define como um array vazio
+          this.editData.peritosAdicionais = []; 
         }
 
-        // Verificando se os campos obrigatórios estão preenchidos corretamente
         if (!this.editData.peritoPrincipal || this.editData.peritoPrincipal.length < 3) {
           alert('O nome do perito principal deve ter pelo menos 3 caracteres.');
           return;
@@ -152,34 +148,33 @@ export default {
           return;
         }
 
-        // Atualiza o localStorage
         let auditorias = JSON.parse(localStorage.getItem('auditorias')) || [];
         const index = auditorias.findIndex(auditoria => auditoria.id === this.auditoria.id);
 
         if (index !== -1) {
-          auditorias[index] = { ...this.editData };  // Atualiza a auditoria existente
-          localStorage.setItem('auditorias', JSON.stringify(auditorias)); // Salva no localStorage
+          auditorias[index] = { ...this.editData };  
+          localStorage.setItem('auditorias', JSON.stringify(auditorias)); 
         }
 
-        this.$emit('update', this.editData); // Emite os dados atualizados para o componente pai
-        this.toggleEditForm(); // Fecha o formulário após guardar
+        this.$emit('update', this.editData);
+        this.toggleEditForm(); 
       } catch (error) {
         console.error('Erro ao guardar os dados da auditoria:', error);
       }
     }
   },
   mounted() {
-    feather.replace(); // Atualiza os ícones do Feather
+    feather.replace(); 
   },
   updated() {
-    feather.replace(); // Atualiza os ícones após a atualização do componente
+    feather.replace(); 
   }
 }
 </script>
 
 <style scoped>
 .audit-item {
-    background: rgba(175, 149, 4, 0.42);
+    background: rgba(10, 85, 0, 0.42);
     display: flex;
     flex-direction: column;
     max-width: 300px;
@@ -210,6 +205,7 @@ export default {
 }
 
 .details {
+  color: white;
   padding: 10px 0;
   flex-grow: 1;
 }
@@ -222,6 +218,7 @@ export default {
 }
 
 .title {
+  color: white;
   font-size: 1.2em;
   font-weight: bold;
   margin: 0;
@@ -246,7 +243,7 @@ export default {
 }
 
 .delete-btn {
-  background-color: rgba(209, 2, 2, 0.66);
+  background-color: rgba(2, 59, 28, 0.68);
   color: white;
   border: none;
   padding: 10px;
@@ -257,11 +254,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .delete-btn:hover {
-  background-color: darkred;
+  background-color:rgb(12, 49, 1);
 }
 
 .delete-btn i {
@@ -285,7 +282,7 @@ margin-top: 1rem;
 
 .edit-form button {
     padding: 1rem;
-    background-color:rgba(2, 112, 6, 0.73);
+    background-color:rgba(2, 59, 28, 0.68);
     color: white;
     border: none;
     border-radius: 0.5rem;
@@ -294,6 +291,6 @@ margin-top: 1rem;
 }
 
 .edit-form button:hover {
-  background-color: #45a049;
+  background-color: rgb(12, 49, 1);
 }
 </style>

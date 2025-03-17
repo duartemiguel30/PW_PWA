@@ -27,9 +27,7 @@ export default {
       const adminPassword = '1234';
 
       if (this.email === adminEmail && this.password === adminPassword) {
-        // Salva no localStorage a informação de que o usuário é admin
         localStorage.setItem('isAdmin', true);
-        // Redireciona para o painel de admin
         this.$router.push('/admin-dashboard');
       } else {
         alert('Credenciais inválidas!');
