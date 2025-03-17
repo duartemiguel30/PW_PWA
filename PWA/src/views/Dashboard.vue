@@ -12,7 +12,7 @@
         
       <div class="row text-center mt-4">
         <div class="col-md-4">
-          <div class="card text-bg-primary mb-3">
+          <div class="card" :style="{ backgroundColor: 'rgba(2, 59, 28, 0.68)', color: '#fff' }">
             <div class="card-body">
               <h6 class="card-title">Total de Auditorias</h6>
               <p class="display-6">{{ totalAuditorias }}</p>
@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card text-bg-warning mb-3">
+          <div class="card" :style="{ backgroundColor: 'rgba(2, 59, 28, 0.68)', color: '#fff'}">
             <div class="card-body">
               <h6 class="card-title">Abertas</h6>
               <p class="display-6">{{ auditoriasAbertas }}</p>
@@ -28,7 +28,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card text-bg-success mb-3">
+          <div class="card" :style="{ backgroundColor: 'rgba(2, 59, 28, 0.68)', color: '#fff'}">
             <div class="card-body">
               <h6 class="card-title">Terminadas</h6>
               <p class="display-6">{{ auditoriasTerminadas }}</p>
@@ -37,7 +37,7 @@
         </div>
 
         <div class="col-md-6">
-          <div class="card text-bg-info mb-3">
+          <div class="card" :style="{ backgroundColor: 'rgba(2, 59, 28, 0.68)', color: '#fff'}">
             <div class="card-body">
               <h6 class="card-title">Utilizadores registados</h6>
               <p class="display-6">{{ totalUtilizadores }}</p>
@@ -45,7 +45,7 @@
           </div>
         </div>
         <div class="col-md-6">
-          <div class="card text-bg-danger mb-3">
+          <div class="card" :style="{ backgroundColor: 'rgba(80, 94, 86, 0.68)', color: '#fff'}">
             <div class="card-body">
               <h6 class="card-title">Faturação Total (€)</h6>
               <p class="display-6">{{ faturacaoTotal.toFixed(2) }}</p>
