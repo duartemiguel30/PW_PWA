@@ -5,49 +5,32 @@
       <ul class="sidebar-menu">
         <li>
           <router-link to="/admin-dashboard" class="sidebar-item" title="Dashboard">
-            <i data-feather="activity"></i> <!-- Ícone do Dashboard -->
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/admin-users" class="sidebar-item" title="Users">
-            <i data-feather="users"></i> <!-- Ícone de Users -->
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/admin-settings" class="sidebar-item" title="Settings">
-            <i data-feather="settings"></i> <!-- Ícone de Settings -->
+            <i data-feather="activity"></i> 
           </router-link>
         </li>
         <li>
           <router-link to="/admin-reports" class="sidebar-item" title="Reports">
-            <i data-feather="bar-chart-2"></i> <!-- Ícone de Reports -->
+            <i data-feather="bar-chart-2"></i>
           </router-link>
         </li>
         <li>
       <router-link to="/admin-adicionar-auditoria" class="sidebar-item" title="Nova Auditoria">
-        <i data-feather="plus-circle"></i> <!-- Ícone de Adicionar -->
+        <i data-feather="plus-circle"></i> 
       </router-link>
     </li>
 
       </ul>
     </div>
 
-    <!-- Bottom Bar (Somente para Mobile) -->
     <div v-if="isMobile" class="bottom-bar">
       <router-link to="/admin-dashboard" class="bottom-item" title="Dashboard">
-        <i data-feather="activity"></i> <!-- Ícone de Dashboard -->
-      </router-link>
-      <router-link to="/admin-users" class="bottom-item" title="Users">
-        <i data-feather="users"></i> <!-- Ícone de Users -->
-      </router-link>
-      <router-link to="/admin-settings" class="bottom-item" title="Settings">
-        <i data-feather="settings"></i> <!-- Ícone de Settings -->
+        <i data-feather="activity"></i> 
       </router-link>
       <router-link to="/admin-reports" class="bottom-item" title="Reports">
-        <i data-feather="bar-chart-2"></i> <!-- Ícone de Reports -->
+        <i data-feather="bar-chart-2"></i> 
       </router-link>
       <router-link to="/admin-adicionar-auditoria" class="sidebar-item" title="Nova Auditoria">
-        <i data-feather="plus-circle"></i> <!-- Ícone de Adicionar -->
+        <i data-feather="plus-circle"></i> 
       </router-link>
     </div>
   </div>

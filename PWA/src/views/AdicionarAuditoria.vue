@@ -1,38 +1,29 @@
 <template>
   <div>
-    <!-- Chama o componente Sidebar -->
     <Sidebar />
 
-    <!-- Formulário de Auditoria -->
     <div class="form-container">
       <h2>Adicionar Nova Auditoria</h2>
 
       <form @submit.prevent="guardarAuditoria">
-        <!-- Perito Principal -->
         <label>Perito Principal:</label>
         <input v-model="novaAuditoria.peritoPrincipal" type="text" required />
 
-        <!-- Data de Início -->
         <label>Data de Início:</label>
         <input v-model="novaAuditoria.dataInicio" type="date" required />
 
-        <!-- Data de Fim -->
         <label>Data de Fim:</label>
         <input v-model="novaAuditoria.dataFim" type="date" required />
 
-        <!-- Hora de Chegada -->
         <label>Hora de Chegada:</label>
         <input v-model="novaAuditoria.horaChegada" type="time" required />
 
-        <!-- Hora de Término -->
         <label>Hora de Término (opcional):</label>
         <input v-model="novaAuditoria.horaTermino" type="time" />
 
-        <!-- Peritos Adicionais -->
         <label>Peritos Adicionais (separados por vírgula):</label>
         <input v-model="peritosAdicionaisInput" type="text" />
 
-        <!-- Materiais Necessários (Checkboxes) -->
         <label>Materiais Necessários:</label>
         <div class="material-list">
           <div v-for="material in materiais" :key="material.nome">
@@ -48,37 +39,19 @@
           </div>
         </div>
 
-        <!-- Cálculo de Orçamento -->
         <div>
           <p><strong>Orçamento Estimado:</strong> € {{ orcamentoEstimado }}</p>
         </div>
 
-        <!-- Imagem -->
         <label>Imagem:</label>
         <input type="file" @change="handleImageUpload" />
 
-        <!-- Botão de Submissão -->
         <button type="submit">Guardar Auditoria</button>
       </form>
 
       <router-link to="/admin-dashboard" class="back-link">Voltar ao Painel</router-link>
     </div>
 
-    <!-- Bottom Bar (Somente para Mobile) -->
-    <div v-if="isMobile" class="bottom-bar">
-      <router-link to="/admin-dashboard" class="bottom-item" title="Dashboard">
-        <i data-feather="activity"></i> <!-- Ícone de Dashboard -->
-      </router-link>
-      <router-link to="/admin-users" class="bottom-item" title="Users">
-        <i data-feather="users"></i> <!-- Ícone de Users -->
-      </router-link>
-      <router-link to="/admin-settings" class="bottom-item" title="Settings">
-        <i data-feather="settings"></i> <!-- Ícone de Settings -->
-      </router-link>
-      <router-link to="/admin-reports" class="bottom-item" title="Reports">
-        <i data-feather="bar-chart-2"></i> <!-- Ícone de Reports -->
-      </router-link>
-    </div>
   </div>
 </template>
 

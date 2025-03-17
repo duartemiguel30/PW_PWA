@@ -9,7 +9,6 @@
         <h2 class="title">{{ auditoria.peritoPrincipal }}</h2>
         <div class="actions">
           <button class="edit-btn" @click="toggleEditForm">
-            <!-- Ícone de edição do Feather -->
             <i data-feather="edit"></i> 
           </button>
         </div>
@@ -41,7 +40,6 @@
       <i data-feather="check-circle"></i> Concluir
     </button>
 
-    <!-- Alerta de Confirmação -->
     <div v-if="showConfirmModal" class="alert-overlay">
       <div class="alert">
         <p>Tem certeza que deseja excluir esta auditoria? Essa ação não pode ser desfeita.</p>
