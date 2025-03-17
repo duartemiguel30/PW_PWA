@@ -1,11 +1,10 @@
-
 <template>
   <div>
     <div v-if="!isMobile" class="sidebar">
       <ul class="sidebar-menu">
         <li>
           <router-link to="/admin-dashboard" class="sidebar-item" title="Dashboard">
-            <i data-feather="activity"></i> 
+            <i data-feather="activity"></i>
           </router-link>
         </li>
         <li>
@@ -14,24 +13,31 @@
           </router-link>
         </li>
         <li>
-      <router-link to="/admin-adicionar-auditoria" class="sidebar-item" title="Nova Auditoria">
-        <i data-feather="plus-circle"></i> 
-      </router-link>
-    </li>
-
+          <router-link to="/admin-adicionar-auditoria" class="sidebar-item" title="Nova Auditoria">
+            <i data-feather="plus-circle"></i>
+          </router-link>
+        </li>
+        <li>
+          <a @click="logout" class="sidebar-item" title="Logout">
+            <i data-feather="log-out"></i>
+          </a>
+        </li>
       </ul>
     </div>
 
     <div v-if="isMobile" class="bottom-bar">
       <router-link to="/admin-dashboard" class="bottom-item" title="Dashboard">
-        <i data-feather="activity"></i> 
+        <i data-feather="activity"></i>
       </router-link>
       <router-link to="/admin-reports" class="bottom-item" title="Reports">
-        <i data-feather="bar-chart-2"></i> 
+        <i data-feather="bar-chart-2"></i>
       </router-link>
       <router-link to="/admin-adicionar-auditoria" class="sidebar-item" title="Nova Auditoria">
-        <i data-feather="plus-circle"></i> 
+        <i data-feather="plus-circle"></i>
       </router-link>
+      <a @click="logout" class="bottom-item" title="Logout">
+        <i data-feather="log-out"></i>
+      </a>
     </div>
   </div>
 </template>
@@ -45,7 +51,7 @@ export default {
   },
   mounted() {
     window.addEventListener("resize", this.checkIfMobile);
-    feather.replace(); 
+    feather.replace();  
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.checkIfMobile);
@@ -53,6 +59,12 @@ export default {
   methods: {
     checkIfMobile() {
       this.isMobile = window.innerWidth <= 768;
+    },
+    logout() {
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('isAdmin');
+      
+      this.$router.push('/login');
     }
   }
 };
@@ -60,7 +72,7 @@ export default {
 
 <style scoped>
 .sidebar {
-  width: 80px; 
+  width: 80px;
   height: 100vh;
   background-color: rgba(2, 59, 28, 0.68);
   color: white;
@@ -85,15 +97,14 @@ export default {
   padding: 1rem;
   color: white;
   text-decoration: none;
-  font-size: 2rem; 
+  font-size: 2rem;
 }
-
 
 .bottom-bar {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background-color: rgba(2, 59, 28, 0.68); 
+  background-color: rgba(2, 59, 28, 0.68);
   display: flex;
   justify-content: space-around;
   padding: 1rem 0;
@@ -103,13 +114,17 @@ export default {
 .bottom-item {
   color: white;
   text-decoration: none;
-  font-size: 2rem; 
+  font-size: 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .bottom-item:hover {
+  color: #aaa;
+}
+
+.sidebar-item:hover {
   color: #aaa;
 }
 
