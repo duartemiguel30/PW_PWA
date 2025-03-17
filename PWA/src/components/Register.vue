@@ -38,20 +38,26 @@ export default {
         password: this.password,
       };
 
-      const existingUser = JSON.parse(localStorage.getItem("users")) || [];
-      const userExists = existingUser.find(u => u.email === this.email);
+      // Obter os utilizadores existentes no localStorage
+      const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+
+      // Verificar se o utilizador já existe
+      const userExists = existingUsers.find(u => u.email === this.email);
 
       if (userExists) {
         alert("Este email já está registado!");
       } else {
-        existingUser.push(user);
-        localStorage.setItem("users", JSON.stringify(existingUser));
-        alert(`Utilizador ${this.name} registado com sucesso!`);
+        existingUsers.push(user);
+        
+        localStorage.setItem("users", JSON.stringify(existingUsers));
+
+        this.$router.push("/login");
       }
     },
   },
 };
 </script>
+
 
 <style scoped>
 .auth-container {

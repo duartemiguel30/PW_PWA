@@ -38,7 +38,6 @@ export default {
 
     if (user) {
       localStorage.setItem('isAuthenticated', true); 
-      alert("Login bem-sucedido!");
       this.$router.push('/admin-dashboard'); 
     } else {
       alert('Credenciais inválidas!');
