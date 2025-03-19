@@ -5,10 +5,11 @@
     <div class="dashboard-content">
       <div v-if="auditoriasData.length === 0" class="no-audit-message text-center mt-4">
         Nenhuma auditoria ativa. 
-        <router-link to="/admin-adicionar-auditoria" class="text-decoration-none text-primary">
+        <router-link to="/admin-add-audit" class="text-decoration-none text-primary">
           Adiciona uma aqui!
         </router-link>
       </div>
+
         
       <div class="row text-center mt-4">
         <div class="col-md-4">

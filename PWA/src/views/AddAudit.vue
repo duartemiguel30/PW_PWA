@@ -78,16 +78,14 @@ export default {
       peritosAdicionaisInput: "",
       materiaisSelecionados: [],
       materiais: [
-        { nome: "Laptop", preco: 1000 },
-        { nome: "Projetor", preco: 500 },
-        { nome: "Impressora portátil", preco: 150 },
-        { nome: "Câmera fotográfica", preco: 800 },
-        { nome: "Microfone", preco: 120 },
-        { nome: "Smartphone", preco: 600 },
-        { nome: "Documentos de referência", preco: 20 },
-        { nome: "Planilhas de dados", preco: 10 },
-        { nome: "Contrato de serviço", preco: 50 },
-        { nome: "Formulários", preco: 69 }
+        { nome: "Aluguer de computador", preco: 29.99 },
+        { nome: "Gravação drone", preco: 25.99 },
+        { nome: "Aluguer Grua", preco: 79.99  },
+        { nome: "Barreira", preco: 10.99 },
+        { nome: "Aluguer microfone", preco: 9.99 },
+        { nome: "Intervenção do corpo de bombeiros", preco: 99.99 },
+        { nome: "Documentos de referência", preco: 19.99 },
+        { nome: "Contrato de serviço", preco: 4.99 },
       ]
     };
   },

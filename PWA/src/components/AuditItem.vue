@@ -189,9 +189,9 @@ export default {
     background: rgba(10, 85, 0, 0.42);
     display: flex;
     flex-direction: column;
-    max-width: 300px;
-    margin: 20px;
-    border-radius: 8px;
+    max-width: 18.75rem;
+    margin: 1.4rem;
+    border-radius: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: transform 0.3s ease;

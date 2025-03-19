@@ -3,13 +3,25 @@
     <SidebarMenu />
     <div class="dashboard-content">
 
-      <div v-if="auditoriasData.length === 0" class="no-audit-message" style="display: flex; align-items: center; justify-content: center; height: 100%;">
-        Nenhuma auditoria ativa. <router-link to="/admin-adicionar-auditoria" style="color: black;">Adiciona uma aqui.</router-link>
+      <div v-if="auditoriasData.length > 0" class="filter-container">
+      <label for="audit-filter">Estado</label>
+      <select id="audit-filter" v-model="filtroSelecionado">
+        <option value="todas">Todas</option>
+        <option value="abertas">Abertas</option>
+        <option value="fechadas">Fechadas</option>
+      </select>
+    </div>
+
+
+      <div v-if="auditoriasFiltradas.length === 0" class="no-audit-message">
+        Nenhuma auditoria encontrada.
+        <router-link to="/admin-add-audit">Adiciona uma aqui.</router-link>
       </div>
 
       <div class="audit-list">
-        <AuditItem v-for="(auditoria, index) in auditoriasData" :key="index" :auditoria="auditoria" />
+        <AuditItem v-for="(auditoria, index) in auditoriasFiltradas" :key="index" :auditoria="auditoria" />
       </div>
+
     </div>
   </div>
 </template>
@@ -25,11 +37,22 @@ export default {
   },
   data() {
     return {
-      auditoriasData: [] 
+      auditoriasData: [], 
+      filtroSelecionado: "abertas" 
     };
   },
+  computed: {
+    auditoriasFiltradas() {
+      if (this.filtroSelecionado === "abertas") {
+        return this.auditoriasData.filter(a => a.status === "aberta");
+      } else if (this.filtroSelecionado === "fechadas") {
+        return this.auditoriasData.filter(a => a.status === "terminada");
+      }
+      return this.auditoriasData;
+    }
+  },
   mounted() {
-    this.carregarAuditorias(); 
+    this.carregarAuditorias();
   },
   methods: {
     carregarAuditorias() {
@@ -52,6 +75,22 @@ export default {
   max-width: 75rem;
 }
 
+/* Filtro */
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  justify-content: flex-end;
+}
+
+.filter-container select {
+  padding: 0.3rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+}
+
+/* Lista de auditorias */
 .audit-list {
   display: grid;
   margin-top: 1rem;
@@ -60,6 +99,7 @@ export default {
   justify-content: flex-start;
 }
 
+/* Mensagem quando não há auditorias */
 .no-audit-message {
   font-size: 1.2rem;
   text-align: center;

@@ -13,7 +13,7 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/admin-adicionar-auditoria" class="sidebar-item" title="Nova Auditoria">
+          <router-link to="/admin-add-audit" class="sidebar-item" title="Nova Auditoria">
             <i data-feather="plus-circle"></i>
           </router-link>
         </li>
@@ -32,7 +32,7 @@
       <router-link to="/dashboard" class="bottom-item" title="Reports">
         <i data-feather="bar-chart-2"></i>
       </router-link>
-      <router-link to="/admin-adicionar-auditoria" class="sidebar-item" title="Nova Auditoria">
+      <router-link to="/admin-ad" class="sidebar-item" title="Nova Auditoria">
         <i data-feather="plus-circle"></i>
       </router-link>
       <a @click="logout" class="bottom-item" title="Logout">
