@@ -2,7 +2,6 @@
   <div class="dashboard-container">
     <SidebarMenu />
     <div class="dashboard-content">
-      <!-- Filtro de Auditorias -->
       <div v-if="auditoriasData.length > 0" class="filter-container">
         <label for="audit-filter">Estado</label>
         <select id="audit-filter" v-model="filtroSelecionado">
@@ -11,14 +10,13 @@
         </select>
       </div>
 
-      <!-- Mensagem quando não há auditorias -->
       <div v-if="auditoriasFiltradas.length === 0" class="no-audit-message">
         Nenhuma auditoria encontrada.
         <router-link to="/admin-add-audit">Adicione uma aqui.</router-link>
       </div>
 
-      <!-- Exibição de Auditorias Abertas como Cards -->
-      <div v-if="filtroSelecionado === 'abertas'" class="audit-list">
+      <!-- Exibição de Auditorias como Cards para ambos os estados -->
+      <div class="audit-list">
         <AuditItem
           v-for="auditoria in auditoriasFiltradas"
           :key="auditoria.id"
@@ -26,30 +24,6 @@
           @edit="handleEdit"
           @update="handleUpdate"
         />
-      </div>
-
-      <!-- Exibição de Auditorias Fechadas em uma única Tabela -->
-      <div v-else-if="filtroSelecionado === 'fechadas'" class="audit-table-container">
-        <table class="audit-table">
-          <thead>
-            <tr>
-              <th>Perito Principal</th>
-              <th>Data Início - Fim</th>
-              <th>Material</th>
-              <th>Custo Estimado</th>
-              <th>Peritos Adicionais</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Cada AuditItem renderiza uma linha (<tr>) -->
-            <AuditItem
-              v-for="auditoria in auditoriasFiltradas"
-              :key="auditoria.id"
-              :auditoria="auditoria"
-              @update="handleUpdate"
-            />
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -73,12 +47,9 @@ export default {
   },
   computed: {
     auditoriasFiltradas() {
-      if (this.filtroSelecionado === "abertas") {
-        return this.auditoriasData.filter(a => a.status === "aberta");
-      } else if (this.filtroSelecionado === "fechadas") {
-        return this.auditoriasData.filter(a => a.status === "terminada");
-      }
-      return this.auditoriasData;
+      return this.auditoriasData.filter(a =>
+        this.filtroSelecionado === "abertas" ? a.status === "aberta" : a.status === "terminada"
+      );
     },
   },
   mounted() {
@@ -89,11 +60,9 @@ export default {
       this.auditoriasData = JSON.parse(localStorage.getItem("auditorias")) || [];
     },
     handleEdit(id) {
-      // Lógica para editar auditoria
       console.log("Editar auditoria com id:", id);
     },
     handleUpdate(auditoria) {
-      // Atualiza a lista se necessário
       this.carregarAuditorias();
     },
   },
@@ -101,35 +70,67 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos globais e container principal */
 .dashboard-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f8f9fa;
 }
 
+/* Conteúdo central com destaque */
 .dashboard-content {
-  padding: 1.5rem;
+  padding: 2rem;
   flex: 1;
   max-width: 75rem;
-  margin: 0 auto;
+  margin: 2rem auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Filtro */
+/* Filtro moderno e minimalista */
 .filter-container {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
   justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.filter-container label {
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+  color: #333;
 }
 
 .filter-container select {
-  padding: 0.3rem;
-  border-radius: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
   border: 1px solid #ccc;
+  background-color: #fafafa;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
-/* Grid responsivo para auditorias abertas */
+.filter-container select:focus {
+  border-color: #007bff;
+}
+
+/* Mensagem de auditoria não encontrada */
+.no-audit-message {
+  font-size: 1.2rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.no-audit-message a {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+/* Cards de auditoria */
 .audit-list {
   display: grid;
   margin-top: 1rem;
@@ -148,40 +149,5 @@ export default {
   .audit-list {
     grid-template-columns: 1fr;
   }
-}
-
-/* Tabela de auditorias fechadas */
-.audit-table-container {
-  margin-top: 1rem;
-  overflow-x: auto;
-}
-
-.audit-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 auto;
-}
-
-.audit-table th,
-.audit-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: left;
-}
-
-.audit-table th {
-  background-color: rgb(7, 56, 1);
-  color: white;
-}
-
-.no-audit-message {
-  font-size: 1.2rem;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-.no-audit-message a {
-  color: blue;
-  text-decoration: underline;
 }
 </style>

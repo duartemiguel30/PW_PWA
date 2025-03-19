@@ -32,7 +32,7 @@
       <router-link to="/dashboard" class="bottom-item" title="Reports">
         <i data-feather="bar-chart-2"></i>
       </router-link>
-      <router-link to="/admin-ad" class="sidebar-item" title="Nova Auditoria">
+      <router-link to="/admin-add-audit" class="bottom-item" title="Nova Auditoria">
         <i data-feather="plus-circle"></i>
       </router-link>
       <a @click="logout" class="bottom-item" title="Logout">
@@ -51,7 +51,7 @@ export default {
   },
   mounted() {
     window.addEventListener("resize", this.checkIfMobile);
-    feather.replace();  
+    feather.replace();
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.checkIfMobile);
@@ -63,7 +63,6 @@ export default {
     logout() {
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('isAdmin');
-      
       this.$router.push('/login');
     }
   }
@@ -71,10 +70,16 @@ export default {
 </script>
 
 <style scoped>
+/* Impedir rolagem horizontal global */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Sidebar fixa */
 .sidebar {
   width: 80px;
   height: 100vh;
-  background-color: rgba(2, 59, 28, 0.68);
+  background-color: #023b1c;
   color: white;
   position: fixed;
   top: 0;
@@ -83,11 +88,14 @@ export default {
   flex-direction: column;
   align-items: center;
   padding-top: 1rem;
+  overflow: hidden;
 }
 
+/* Menu da Sidebar */
 .sidebar-menu {
   list-style-type: none;
   padding: 0;
+  margin: 0;
 }
 
 .sidebar-item {
@@ -100,15 +108,22 @@ export default {
   font-size: 2rem;
 }
 
+.sidebar-item:hover {
+  color: #aaa;
+}
+
+/* Bottom bar fixa */
 .bottom-bar {
   position: fixed;
   bottom: 0;
-  width: 100%;
-  background-color: rgba(2, 59, 28, 0.68);
+  left: 0;
+  right: 0;
+  background-color: #023b1c;
   display: flex;
   justify-content: space-around;
   padding: 1rem 0;
   z-index: 9999;
+  overflow: hidden;
 }
 
 .bottom-item {
@@ -124,10 +139,7 @@ export default {
   color: #aaa;
 }
 
-.sidebar-item:hover {
-  color: #aaa;
-}
-
+/* Esconder sidebar em mobile */
 @media (max-width: 768px) {
   .sidebar {
     display: none;

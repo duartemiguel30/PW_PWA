@@ -1,124 +1,90 @@
 <template>
-  <!-- Auditoria Aberta: Renderiza como card -->
+  <!-- Auditoria Aberta: Renderiza como card com imagem e detalhes completos -->
   <template v-if="auditoria.status === 'aberta'">
-    <div class="audit-item audit-open card-layout">
-      <div class="image-container">
+    <div class="audit-item audit-open card-layout" @click="openDetailsModal">
+      <div class="image-container" v-if="auditoria.imagem">
         <img :src="auditoria.imagem" alt="Imagem da Auditoria" class="audit-image" />
       </div>
-
-      <div v-if="!editMode" class="details">
-        <div class="header">
-          <h2 class="title">{{ auditoria.peritoPrincipal }}</h2>
-          <div class="actions">
-            <button class="edit-btn" @click="toggleEditMode">
-              <i data-feather="edit"></i> Editar
-            </button>
-          </div>
-        </div>
-        <p class="dates">
-          {{ formatDate(auditoria.dataInicio) }} - {{ formatDate(auditoria.dataFim) }}
+      <div class="card-summary">
+        <h2 class="title">{{ auditoria.nomeAuditoria }}</h2>
+        <p class="location"><strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}</p>
+        <p class="dates"><strong>Agendamento:</strong> {{ formatDate(auditoria.dataInicio, auditoria.horaChegada) }}
+          <span v-if="auditoria.dataFim && auditoria.horaTermino"> - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}</span>
         </p>
         <div class="material">
-          <h5 class="section-title">Material Necessário</h5>
-          <p v-if="auditoria.materialNecessario.length === 0">
-            Nenhum material especificado.
-          </p>
+          <h5 class="section-title">Materiais Necessários</h5>
+          <p v-if="auditoria.materialNecessario.length === 0">Nenhum material especificado.</p>
           <ul v-else>
-            <li v-for="(item, index) in auditoria.materialNecessario" :key="index">
-              {{ item }}
-            </li>
-          </ul>
-        </div>
-        <div class="cost">
-          <p>
-            <strong>Custo Estimado:</strong> {{ formatCurrency(auditoria.custoEstimado) }}
-          </p>
-        </div>
-        <div class="additional-experts" v-if="auditoria.peritosAdicionais.length > 0">
-          <h5 class="section-title">Peritos Adicionais</h5>
-          <ul>
-            <li v-for="(perito, index) in auditoria.peritosAdicionais" :key="index">
-              {{ perito }}
-            </li>
+            <li v-for="(item, index) in auditoria.materialNecessario" :key="index">{{ item }}</li>
           </ul>
         </div>
       </div>
-
-      <!-- Formulário de Edição Inline -->
-      <div v-else class="edit-form-inline">
-        <div class="form-group">
-          <label>Perito Principal:</label>
-          <input v-model="editData.peritoPrincipal" type="text" />
-        </div>
-        <div class="form-group">
-          <label>Data de Início:</label>
-          <input v-model="editData.dataInicio" type="date" />
-        </div>
-        <div class="form-group">
-          <label>Data de Fim:</label>
-          <input v-model="editData.dataFim" type="date" />
-        </div>
-        <div class="form-group">
-          <label>Custo Estimado:</label>
-          <input v-model.number="editData.custoEstimado" type="number" step="0.01" />
-        </div>
-        <div class="form-group">
-          <label>Material (separado por vírgula):</label>
-          <input v-model="editData.materialNecessarioString" type="text" />
-        </div>
-        <div class="form-group">
-          <label>Peritos (separado por vírgula):</label>
-          <input v-model="editData.peritosAdicionaisString" type="text" />
-        </div>
-        <div class="edit-actions">
-          <button @click="saveEdit">Salvar</button>
-          <button @click="cancelEdit">Cancelar</button>
-        </div>
-      </div>
-
-      <!-- Botão "Concluir" (apenas para auditorias abertas) -->
-      <button class="delete-btn" @click="confirmComplete(auditoria.id)">
-        <i data-feather="check-circle"></i> Concluir
-      </button>
     </div>
 
-    <!-- Modal de Confirmação -->
-    <div v-if="showConfirmModal" class="alert-overlay">
-      <div class="alert">
-        <p>Tem certeza que deseja concluir esta auditoria? Essa ação não pode ser desfeita.</p>
-        <div class="alert-actions">
-          <button class="cancel-btn" @click="showConfirmModal = false">Cancelar</button>
-          <button class="confirm-btn" @click="completeAudit(auditoria.id)">
-            Confirmar
-          </button>
+    <!-- Modal de Detalhes para auditorias abertas -->
+    <div v-if="showDetailsModal" class="modal-overlay" @click.self="closeDetailsModal">
+      <div class="modal-content">
+        <h2>Detalhes da Auditoria</h2>
+        <div class="modal-body">
+          <p><strong>Nome da Auditoria:</strong> {{ auditoria.nomeAuditoria }}</p>
+          <p v-if="auditoria.descricaoAuditoria"><strong>Descrição:</strong> {{ auditoria.descricaoAuditoria }}</p>
+          <p v-if="auditoria.tipo"><strong>Tipo:</strong> {{ auditoria.tipo }}</p>
+          <p><strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}</p>
+          <p>
+            <strong>Agendamento:</strong> {{ formatDate(auditoria.dataInicio, auditoria.horaChegada) }}
+            <span v-if="auditoria.dataFim && auditoria.horaTermino"> - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}</span>
+          </p>
+          <div class="material">
+            <h5>Materiais Necessários:</h5>
+            <ul v-if="auditoria.materialNecessario.length > 0">
+              <li v-for="(item, index) in auditoria.materialNecessario" :key="index">{{ item }}</li>
+            </ul>
+            <p v-else>Nenhum material especificado.</p>
+          </div>
+          <p><strong>Orçamento Estimado:</strong> {{ formatCurrency(auditoria.custoEstimado) }}</p>
         </div>
+        <button @click="closeDetailsModal">Fechar</button>
       </div>
     </div>
   </template>
 
-  <!-- Auditoria Fechada: Renderiza como linha de tabela -->
+  <!-- Auditoria Terminada: Renderiza como card compacto -->
   <template v-else-if="auditoria.status === 'terminada'">
-    <tr class="table-row">
-      <td>{{ auditoria.peritoPrincipal }}</td>
-      <td>{{ formatDate(auditoria.dataInicio) }} - {{ formatDate(auditoria.dataFim) }}</td>
-      <td>
-        <ul v-if="auditoria.materialNecessario.length > 0">
-          <li v-for="(item, index) in auditoria.materialNecessario" :key="index">
-            {{ item }}
-          </li>
-        </ul>
-        <p v-else>Nenhum material especificado.</p>
-      </td>
-      <td>{{ formatCurrency(auditoria.custoEstimado) }}</td>
-      <td>
-        <ul v-if="auditoria.peritosAdicionais.length > 0">
-          <li v-for="(perito, index) in auditoria.peritosAdicionais" :key="index">
-            {{ perito }}
-          </li>
-        </ul>
-        <p v-else>Sem peritos adicionais.</p>
-      </td>
-    </tr>
+    <div class="audit-item audit-terminated card-layout" @click="openDetailsModal">
+      <div class="card-summary">
+        <h2 class="title">{{ auditoria.nomeAuditoria }}</h2>
+        <p class="location"><strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}</p>
+        <p class="dates"><strong>Agendamento:</strong> {{ formatDate(auditoria.dataInicio, auditoria.horaChegada) }}
+          <span v-if="auditoria.dataFim && auditoria.horaTermino"> - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}</span>
+        </p>
+        <p class="cost"><strong>Custo:</strong> {{ formatCurrency(auditoria.custoEstimado) }}</p>
+      </div>
+    </div>
+
+    <!-- Modal de Detalhes para auditorias terminadas -->
+    <div v-if="showDetailsModal" class="modal-overlay" @click.self="closeDetailsModal">
+      <div class="modal-content">
+        <h2>Detalhes da Auditoria</h2>
+        <div class="modal-body">
+          <p><strong>Nome da Auditoria:</strong> {{ auditoria.nomeAuditoria }}</p>
+          <p v-if="auditoria.descricaoAuditoria"><strong>Descrição:</strong> {{ auditoria.descricaoAuditoria }}</p>
+          <p v-if="auditoria.tipo"><strong>Tipo:</strong> {{ auditoria.tipo }}</p>
+          <p><strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}</p>
+          <p>
+            <strong>Agendamento:</strong> {{ formatDate(auditoria.dataInicio, auditoria.horaChegada) }}
+            <span v-if="auditoria.dataFim && auditoria.horaTermino"> - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}</span>
+          </p>
+          <div class="material" v-if="auditoria.materialNecessario.length > 0">
+            <h5>Materiais Necessários:</h5>
+            <ul>
+              <li v-for="(item, index) in auditoria.materialNecessario" :key="index">{{ item }}</li>
+            </ul>
+          </div>
+          <p><strong>Custo Estimado:</strong> {{ formatCurrency(auditoria.custoEstimado) }}</p>
+        </div>
+        <button @click="closeDetailsModal">Fechar</button>
+      </div>
+    </div>
   </template>
 </template>
 
@@ -133,279 +99,152 @@ export default {
   },
   data() {
     return {
-      showConfirmModal: false,
-      editMode: false,
-      editData: {},
+      showDetailsModal: false,
     };
   },
   methods: {
-    toggleEditMode() {
-      this.editMode = !this.editMode;
-      if (this.editMode) {
-        const aud = this.auditoria;
-        this.editData = {
-          id: aud.id,
-          peritoPrincipal: aud.peritoPrincipal,
-          dataInicio: aud.dataInicio,
-          dataFim: aud.dataFim,
-          custoEstimado: aud.custoEstimado,
-          materialNecessarioString: aud.materialNecessario.join(", "),
-          peritosAdicionaisString: aud.peritosAdicionais.join(", "),
-        };
-      }
+    openDetailsModal() {
+      this.showDetailsModal = true;
     },
-    openEditModal(aud) {
-      this.toggleEditMode();
+    closeDetailsModal() {
+      this.showDetailsModal = false;
     },
-    cancelEdit() {
-      this.editMode = false;
-    },
-    saveEdit() {
-      let auditorias = JSON.parse(localStorage.getItem("auditorias")) || [];
-      const index = auditorias.findIndex(aud => aud.id === this.editData.id);
-      if (index !== -1) {
-        auditorias[index].peritoPrincipal = this.editData.peritoPrincipal;
-        auditorias[index].dataInicio = this.editData.dataInicio;
-        auditorias[index].dataFim = this.editData.dataFim;
-        auditorias[index].custoEstimado = this.editData.custoEstimado;
-        auditorias[index].materialNecessario = this.editData.materialNecessarioString.split(",").map(item => item.trim());
-        auditorias[index].peritosAdicionais = this.editData.peritosAdicionaisString.split(",").map(item => item.trim());
-        localStorage.setItem("auditorias", JSON.stringify(auditorias));
-        this.$emit("update", auditorias[index]);
-      }
-      this.editMode = false;
-    },
-    formatDate(date) {
-      if (!date) return "Data inválida";
-      const options = { year: "numeric", month: "long", day: "numeric" };
-      return new Date(date).toLocaleDateString("pt-PT", options);
+    formatDate(date, time) {
+      if (!date || !time) return "Data/Hora inválida";
+      const options = { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
+      return new Date(date + "T" + time).toLocaleDateString("pt-PT", options);
     },
     formatCurrency(value) {
       if (!value) return "€0.00";
       return `€${Number(value).toFixed(2)}`;
-    },
-    confirmComplete(id) {
-      this.showConfirmModal = true;
-    },
-    completeAudit(id) {
-      let auditorias = JSON.parse(localStorage.getItem("auditorias")) || [];
-      const index = auditorias.findIndex(aud => aud.id === id);
-      if (index !== -1) {
-        auditorias[index].status = "terminada";
-        localStorage.setItem("auditorias", JSON.stringify(auditorias));
-        this.$emit("update", auditorias[index]);
-      }
-      this.showConfirmModal = false;
     },
   },
 };
 </script>
 
 <style scoped>
-/* Card layout para auditorias abertas com tamanho reduzido */
+/* Layout geral do card */
 .card-layout {
-  max-width: 14rem;
-  margin: 0.8rem;
-}
-
-/* Estilos gerais para AuditItem */
-.audit-item {
-  background: rgba(10, 85, 0, 0.42);
-  display: flex;
-  flex-direction: column;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  margin: 1rem;
+  cursor: pointer;
   overflow: hidden;
   transition: transform 0.3s ease;
-  padding: 10px;
-  position: relative;
+}
+.card-layout:hover {
+  transform: scale(1.03);
 }
 
-.audit-item:hover {
-  transform: scale(1.05);
+/* Adiciona margem à esquerda no PC para evitar colisão com a sidebar */
+@media (min-width: 1024px) {
+  .card-layout {
+    margin-left: 2rem;
+  }
 }
 
+/* Conteúdo interno */
+.card-summary {
+  padding: 0.8rem 1rem;
+}
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #2c3e50;
+}
+.location,
+.dates,
+.cost {
+  font-size: 0.85rem;
+  margin: 0.2rem 0;
+  color: #34495e;
+}
+
+/* Auditorias Abertas */
 .audit-open {
-  background-color: rgba(2, 59, 28, 0.68);
+  border-left: 5px solid #2ecc71; /* Verde vivo */
 }
-
-.audit-complete {
-  background-color: rgba(150, 35, 0, 0.6);
-}
-
-/* Layout para a linha de tabela (auditorias fechadas) */
-.table-row {
-  background-color: rgba(150, 35, 0, 0.6);
-  color: white;
-}
-
-.table-row td {
-  border: 1px solid #ddd;
-  padding: 10px;
-}
-
-/* Imagem e container */
 .image-container {
   width: 100%;
-  height: 150px;
+  height: 120px;
   overflow: hidden;
-  border-radius: 8px;
 }
-
 .audit-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
-/* Detalhes e texto */
-.details {
-  color: white;
-  padding: 8px 0;
-  flex-grow: 1;
+.material {
+  margin-top: 0.6rem;
+}
+.section-title {
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* Auditorias Terminadas */
+.audit-terminated {
+  border-left: 5px solid #e74c3c; /* Vermelho */
 }
 
-.title {
-  font-size: 1.1em;
-  font-weight: bold;
-  margin: 0;
-}
-
-.actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.edit-btn {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1.1rem;
-}
-
-.edit-btn i {
-  width: 1.3rem;
-  height: 1.3rem;
-}
-
-/* Botão Concluir (apenas para auditorias abertas) */
-.delete-btn {
-  background-color: rgba(2, 59, 28, 0.68);
-  color: white;
-  border: none;
-  padding: 8px;
-  width: 100%;
-  border-radius: 0 0 8px 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  text-align: center;
-}
-
-.delete-btn:hover {
-  background-color: rgb(12, 49, 1);
-}
-
-.delete-btn i {
-  width: 1.3rem;
-  height: 1.3rem;
-}
-
-/* Inline Edit Form */
-.edit-form-inline {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 10px;
-}
-
-.edit-form-inline .form-group {
-  margin-bottom: 10px;
-}
-
-.edit-form-inline .form-group label {
-  font-weight: bold;
-  margin-bottom: 5px;
-  display: block;
-}
-
-.edit-form-inline .form-group input {
-  width: 100%;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.edit-actions {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 10px;
-}
-
-.edit-actions button {
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
-/* Modal de Confirmação */
-.alert-overlay {
+/* Modal */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 10000;
 }
-
-.alert {
-  background: white;
-  padding: 20px;
+.modal-content {
+  background: #fff;
+  padding: 1.5rem;
   border-radius: 8px;
-  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
 }
-
-.alert-actions {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-around;
+.modal-content h2 {
+  margin-top: 0;
+  color: #2c3e50;
 }
-
-.cancel-btn,
-.confirm-btn {
-  padding: 10px 20px;
+.modal-content .modal-body p {
+  margin: 0.5rem 0;
+  color: #34495e;
+}
+.modal-content button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.modal-content button:hover {
+  background-color: #1e8449;
 }
 
-/* Responsividade */
-@media (max-width: 600px) {
-  .card-layout {
-    max-width: 100%;
-    margin: 0.5rem;
+/* Responsividade para mobile, tablet e desktop */
+@media (max-width: 768px) {
+  .card-summary {
+    padding: 0.8rem;
   }
-  .image-container {
-    height: 120px;
+  .title {
+    font-size: 1rem;
   }
-  .details {
-    font-size: 0.9em;
-  }
-  .delete-btn {
-    font-size: 0.9rem;
-  }
-  .modal {
-    width: 90%;
+  .location,
+  .dates,
+  .cost {
+    font-size: 0.8rem;
   }
 }
 </style>
