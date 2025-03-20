@@ -2,7 +2,6 @@
   <div class="dashboard-container">
     <SidebarMenu />
     <div class="dashboard-content">
-      <!-- Desktop: exibe tudo junto -->
       <template v-if="isDesktop">
         <div v-if="auditoriasData.length === 0" class="no-audit-message">
           Nenhuma auditoria ativa.
@@ -10,7 +9,6 @@
             Adiciona uma aqui!
           </router-link>
         </div>
-        <!-- Grid para os cards de métricas (5 colunas no desktop) -->
         <div class="cards-grid desktop-cards">
           <div class="metric-card card-total">
             <h6 class="card-title">Total de Auditorias</h6>
@@ -34,7 +32,6 @@
           </div>
         </div>
 
-        <!-- Grid para os gráficos (auditorias e faturação) -->
         <div class="charts-grid desktop-charts">
           <div class="chart-card">
             <canvas ref="auditoriasChart"></canvas>
@@ -44,7 +41,6 @@
           </div>
         </div>
 
-        <!-- Gráfico de pizza para os materiais necessários -->
         <div class="charts-grid desktop-charts">
           <div class="chart-card">
             <canvas ref="materiaisChart"></canvas>
@@ -52,7 +48,6 @@
         </div>
       </template>
 
-      <!-- Mobile: layout com navegação por setas -->
       <template v-else>
         <div class="mobile-nav">
           <button @click="prevPage" :disabled="currentPage === 0" class="nav-arrow">
@@ -71,7 +66,6 @@
               Adiciona uma aqui!
             </router-link>
           </div>
-          <!-- Grid para os cards de métricas (2 colunas no mobile) -->
           <div class="cards-grid mobile-cards">
             <div class="metric-card card-total">
               <h6 class="card-title">Total de Auditorias</h6>
@@ -86,7 +80,6 @@
               <p class="display-number">{{ auditoriasTerminadas }}</p>
             </div>
           </div>
-          <!-- Grid para o gráfico de auditorias -->
           <div class="charts-grid mobile-charts">
             <div class="chart-card">
               <canvas ref="auditoriasChart"></canvas>
@@ -96,7 +89,6 @@
         </div>
 
         <div v-else-if="currentPage === 1" class="tab-content faturacao-tab">
-          <!-- Grid para os cards de métricas (2 colunas no mobile) -->
           <div class="cards-grid mobile-cards">
             <div class="metric-card card-faturacao">
               <h6 class="card-title">Faturação Total (€)</h6>
@@ -107,7 +99,6 @@
               <p class="display-number">{{ totalUtilizadores }}</p>
             </div>
           </div>
-          <!-- Grid para os gráficos de faturação e materiais -->
           <div class="charts-grid mobile-charts">
             <div class="chart-card">
               <canvas ref="faturacaoChart"></canvas>
@@ -138,7 +129,6 @@ export default {
       auditoriasData: [],
       totalUtilizadores: 0,
       faturacaoTotal: 0,
-      // Usa layout desktop apenas se a largura for maior que 768px
       isDesktop: window.innerWidth > 768,
       chartAuditorias: null,
       chartFaturacao: null,
@@ -191,7 +181,6 @@ export default {
       this.mostrarGraficos();
     },
     mostrarGraficos() {
-      // Gráfico de Auditorias (Bar Chart)
       if (this.chartAuditorias) {
         this.chartAuditorias.destroy();
       }
@@ -222,7 +211,6 @@ export default {
         });
       }
 
-      // Gráfico de Faturação (Line Chart)
       if (this.chartFaturacao) {
         this.chartFaturacao.destroy();
       }
@@ -254,7 +242,6 @@ export default {
         });
       }
 
-      // Gráfico de Pizza para Materiais Necessários
       if (this.chartMateriais) {
         this.chartMateriais.destroy();
       }
@@ -315,7 +302,6 @@ export default {
 </script>
 
 <style scoped>
-/* Navegação por setas para mobile */
 .mobile-nav {
   position: fixed;
   top: 0;
@@ -344,7 +330,6 @@ export default {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  /* Verde escuro com !important para forçar a cor */
   color: #006400 !important;
   padding: 0.25rem 0.5rem;
 }
@@ -354,7 +339,6 @@ export default {
   cursor: default;
 }
 
-/* Layout geral */
 .dashboard-container {
   display: flex;
   height: 100vh;
@@ -362,10 +346,9 @@ export default {
   background: #ffffff;
 }
 
-/* Para dispositivos mobile, garante que o conteúdo comece abaixo da mobile-nav */
 .dashboard-content {
   flex: 1;
-  padding: 5rem 1.5rem 1.5rem; /* 5rem de topo para compensar a mobile-nav fixa */
+  padding: 5rem 1.5rem 1.5rem; 
   margin: 0 auto;
   max-width: 90rem;
   text-align: center;
@@ -375,7 +358,6 @@ export default {
   align-items: center;
 }
 
-/* Mensagem sem auditorias */
 .no-audit-message {
   font-size: 1.2rem;
   text-align: center;
@@ -387,7 +369,6 @@ export default {
   text-decoration: underline;
 }
 
-/* Grid para os cards de métricas */
 .cards-grid {
   display: grid;
   gap: 0.75rem;
@@ -429,7 +410,6 @@ export default {
   word-break: break-all;
 }
 
-/* Grid para os gráficos */
 .charts-grid {
   display: grid;
   gap: 0.75rem;
@@ -453,7 +433,6 @@ export default {
   height: 100% !important;
 }
 
-/* Tabs Content (Mobile) */
 .tab-content {
   display: flex;
   flex-direction: column;
@@ -462,19 +441,16 @@ export default {
   padding-bottom: 3rem;
 }
 
-/* Extra bottom padding para a aba Faturação & Materiais */
 .mobile-bottom-padding,
 .faturacao-tab {
   padding-bottom: 4rem;
 }
 
-/* Botão de Ação no Card Aberto */
 .card-actions {
   padding: 0.5rem 1rem;
   text-align: right;
 }
 
-/* Estilos para o formulário de edição */
 .edit-form .form-group {
   margin-bottom: 1rem;
 }
@@ -493,7 +469,6 @@ export default {
   margin-bottom: 0.5rem;
 }
 
-/* Ajustes para dispositivos maiores */
 @media (min-width: 768px) {
   .dashboard-content {
     padding-left: 7rem;
@@ -507,7 +482,6 @@ export default {
   }
 }
 
-/* Ajustes específicos para telas muito pequenas */
 @media (max-width: 480px) {
   .dashboard-content {
     padding: 5rem 0.5rem 1.5rem;
@@ -530,7 +504,6 @@ export default {
   }
 }
 
-/* Ajustes para iPad mini (até 768px) */
 @media (max-width: 768px) {
   .dashboard-content {
     max-width: 100%;
@@ -538,7 +511,6 @@ export default {
   }
 }
 
-/* Ajustes para iPad Pro (entre 768px e 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) {
   .dashboard-content {
     max-width: 100%;

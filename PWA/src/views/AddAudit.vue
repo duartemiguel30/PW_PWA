@@ -4,9 +4,7 @@
     <div class="form-container">
       <h2>Criação do plano de auditoria</h2>
       <form @submit.prevent="guardarAuditoria">
-        <!-- Modo Mobile (wizard) -->
         <div v-if="isMobile">
-          <!-- Passo 1: Informações do Plano -->
           <div v-show="currentStep === 0" class="section">
             <h3>Informações do Plano</h3>
             <label>Nome da Auditoria:</label>
@@ -23,7 +21,6 @@
             </select>
           </div>
 
-          <!-- Passo 2: Locais Auditados -->
           <div v-show="currentStep === 1" class="section">
             <h3>Locais Auditados</h3>
             <label>País:</label>
@@ -39,7 +36,6 @@
             <input v-model="novaAuditoria.morada" type="text" required />
           </div>
 
-          <!-- Passo 3: Equipa de Auditores -->
           <div v-show="currentStep === 2" class="section">
             <h3>Equipa de Auditores</h3>
             <div class="equipa-list">
@@ -52,7 +48,6 @@
             </div>
           </div>
 
-          <!-- Passo 4: Materiais e Equipamentos -->
           <div v-show="currentStep === 3" class="section">
             <h3>Materiais e Equipamentos</h3>
             <div class="material-list">
@@ -73,7 +68,6 @@
             </p>
           </div>
 
-          <!-- Passo 5: Agendamento -->
           <div v-show="currentStep === 4" class="section">
             <h3>Agendamento</h3>
             <label>Data de Início:</label>
@@ -86,13 +80,11 @@
             <input v-model="novaAuditoria.horaTermino" type="time" />
           </div>
 
-          <!-- Passo 6: Upload de Imagem -->
           <div v-show="currentStep === 5" class="section image-section">
             <h3>Upload de Imagem (opcional)</h3>
             <input type="file" @change="handleImageUpload" />
           </div>
 
-          <!-- Navegação entre passos (botões uniformes) -->
           <div class="step-navigation">
             <button v-if="currentStep > 0" type="button" @click="prevStep">Anterior</button>
             <button v-if="currentStep < totalSteps - 1" type="button" @click="nextStep">
@@ -102,9 +94,7 @@
           </div>
         </div>
 
-        <!-- Modo Desktop: Exibe todas as seções -->
         <div v-else>
-          <!-- INFORMAÇÕES DO PLANO -->
           <div class="section">
             <h3>Informações do Plano</h3>
             <label>Nome da Auditoria:</label>
@@ -121,7 +111,6 @@
             </select>
           </div>
 
-          <!-- LOCAIS AUDITADOS -->
           <div class="section">
             <h3>Locais Auditados</h3>
             <label>País:</label>
@@ -137,7 +126,6 @@
             <input v-model="novaAuditoria.morada" type="text" required />
           </div>
 
-          <!-- EQUIPA DE AUDITORES -->
           <div class="section">
             <h3>Equipa de Auditores</h3>
             <div class="equipa-list">
@@ -150,7 +138,6 @@
             </div>
           </div>
 
-          <!-- MATERIAIS E EQUIPAMENTOS -->
           <div class="section">
             <h3>Materiais e Equipamentos</h3>
             <div class="material-list">
@@ -171,7 +158,6 @@
             </p>
           </div>
 
-          <!-- AGENDAMENTO -->
           <div class="section">
             <h3>Agendamento</h3>
             <label>Data de Início:</label>
@@ -184,13 +170,11 @@
             <input v-model="novaAuditoria.horaTermino" type="time" />
           </div>
 
-          <!-- UPLOAD DE IMAGEM (opcional) -->
           <div class="section image-section">
             <h3>Upload de Imagem (opcional)</h3>
             <input type="file" @change="handleImageUpload" />
           </div>
 
-          <!-- Botão de submissão para desktop -->
           <button type="submit">Criar Plano de Auditoria</button>
         </div>
       </form>
@@ -301,7 +285,6 @@ export default {
       } else {
         this.novaAuditoria.status = "aberta";
       }
-      // Gera um ID único para cada auditoria
       this.novaAuditoria.id = Date.now();
       let auditorias = JSON.parse(localStorage.getItem("auditorias")) || [];
       auditorias.push(this.novaAuditoria);
@@ -324,14 +307,12 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos globais básicos */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Container principal para centralizar todo o conteúdo */
 .container {
   display: flex;
   flex-direction: column;
@@ -342,7 +323,6 @@ export default {
   background-color: #ffffff;
 }
 
-/* Formulário centralizado */
 .form-container {
   width: 100%;
   max-width: 800px;
@@ -353,13 +333,11 @@ export default {
   text-align: center;
 }
 
-/* Título */
 h2 {
   margin-bottom: 1rem;
   text-align: center;
 }
 
-/* Estilos do formulário */
 form {
   width: 100%;
   display: flex;
@@ -367,7 +345,6 @@ form {
   gap: 1.5rem;
 }
 
-/* Seções do formulário */
 .section {
   background: #ffffff;
   border-radius: 8px;
@@ -387,7 +364,6 @@ label {
   display: block;
 }
 
-/* Inputs e outros elementos */
 input[type="text"],
 input[type="date"],
 input[type="time"],
@@ -406,7 +382,6 @@ textarea {
   resize: vertical;
 }
 
-/* Materiais e orçamento */
 .material-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -429,7 +404,6 @@ textarea {
   text-align: center;
 }
 
-/* Navegação de passos (Mobile) - Botões uniformes */
 .step-navigation {
   display: flex;
   flex-direction: column;
@@ -454,7 +428,6 @@ textarea {
   background-color: rgb(12, 49, 1);
 }
 
-/* Botão de submissão para desktop */
 button[type="submit"] {
   padding: 0.7rem;
   background-color: rgba(2, 59, 28, 0.68);
@@ -472,7 +445,6 @@ button[type="submit"]:hover {
   background-color: rgb(12, 49, 1);
 }
 
-/* Estilo para a seção de upload de imagem */
 .image-section {
   padding: 0.5rem;
   text-align: center;
@@ -481,7 +453,6 @@ button[type="submit"]:hover {
   font-size: 0.9rem;
 }
 
-/* Back link */
 .back-link {
   margin-top: 1rem;
   text-decoration: none;
@@ -492,7 +463,6 @@ button[type="submit"]:hover {
   text-decoration: underline;
 }
 
-/* Equipa */
 .equipa-list {
   border: 1px solid #ccc;
   padding: 0.5rem;

@@ -1,5 +1,4 @@
 <template>
-  <!-- Auditoria Aberta: Renderiza como card com imagem e detalhes completos -->
   <template v-if="auditoria.status === 'aberta'">
     <div class="audit-item audit-open card-layout" @click="openDetailsModal">
       <div class="image-container" v-if="auditoria.imagem">
@@ -28,11 +27,9 @@
       </div>
     </div>
 
-    <!-- Modal de Detalhes para auditorias abertas -->
     <div v-if="showDetailsModal" class="modal-overlay" @click.self="closeDetailsModal">
       <div class="modal-content">
         <h2>Detalhes da Auditoria</h2>
-        <!-- Modo visualização -->
         <div v-if="!editMode" class="modal-body">
           <p><strong>Nome da Auditoria:</strong> {{ auditoria.nomeAuditoria }}</p>
           <p v-if="auditoria.descricaoAuditoria">
@@ -66,7 +63,6 @@
             <button @click="closeDetailsModal">Fechar</button>
           </div>
         </div>
-        <!-- Modo de edição: campos editáveis -->
         <div v-else class="modal-body">
           <form @submit.prevent="saveEdits" class="edit-form">
             <label>Nome da Auditoria:</label>
@@ -99,7 +95,6 @@
             <label>Hora de Término:</label>
             <input v-model="editedAuditoria.horaTermino" type="time" />
 
-            <!-- Adicione outros campos conforme necessário -->
 
             <div class="modal-actions">
               <button type="submit">Guardar</button>
@@ -111,7 +106,6 @@
     </div>
   </template>
 
-  <!-- Auditoria Terminada: Renderiza como card compacto -->
   <template v-else-if="auditoria.status === 'terminada'">
     <div class="audit-item audit-terminated card-layout" @click="openDetailsModal">
       <div class="card-summary">
@@ -131,11 +125,9 @@
       </div>
     </div>
 
-    <!-- Modal de Detalhes para auditorias terminadas -->
     <div v-if="showDetailsModal" class="modal-overlay" @click.self="closeDetailsModal">
       <div class="modal-content">
         <h2>Detalhes da Auditoria</h2>
-        <!-- Modo visualização -->
         <div v-if="!editMode" class="modal-body">
           <p><strong>Nome da Auditoria:</strong> {{ auditoria.nomeAuditoria }}</p>
           <p v-if="auditoria.descricaoAuditoria">
@@ -169,7 +161,6 @@
             <button @click="closeDetailsModal">Fechar</button>
           </div>
         </div>
-        <!-- Modo edição -->
         <div v-else class="modal-body">
           <form @submit.prevent="saveEdits" class="edit-form">
             <label>Nome da Auditoria:</label>
@@ -201,8 +192,6 @@
 
             <label>Hora de Término:</label>
             <input v-model="editedAuditoria.horaTermino" type="time" />
-
-            <!-- Outros campos conforme necessário -->
 
             <div class="modal-actions">
               <button type="submit">Guardar</button>
@@ -276,7 +265,6 @@ export default {
 </script>
 
 <style scoped>
-/* Layout geral do card */
 .card-layout {
   background: #fff;
   border-radius: 8px;
@@ -290,14 +278,12 @@ export default {
   transform: scale(1.03);
 }
 
-/* Adiciona margem à esquerda no PC para evitar colisão com a sidebar */
 @media (min-width: 1024px) {
   .card-layout {
     margin-left: 2rem;
   }
 }
 
-/* Conteúdo interno */
 .card-summary {
   padding: 0.8rem 1rem;
 }
@@ -315,9 +301,8 @@ export default {
   color: #34495e;
 }
 
-/* Auditorias Abertas */
 .audit-open {
-  border-left: 5px solid #2ecc71; /* Verde vivo */
+  border-left: 5px solid #2ecc71; 
 }
 .image-container {
   width: 100%;
@@ -337,12 +322,10 @@ export default {
   margin-bottom: 0.3rem;
 }
 
-/* Auditorias Terminadas */
 .audit-terminated {
-  border-left: 5px solid #e74c3c; /* Vermelho */
+  border-left: 5px solid #e74c3c; 
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -391,7 +374,6 @@ export default {
   background-color: #1e8449;
 }
 
-/* Estilos para o formulário de edição aprimorado */
 .edit-form label {
   margin-top: 1rem;
   display: block;
@@ -412,7 +394,6 @@ export default {
   resize: vertical;
 }
 
-/* Responsividade para mobile, tablet e desktop */
 @media (max-width: 768px) {
   .card-summary {
     padding: 0.8rem;

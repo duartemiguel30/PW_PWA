@@ -70,12 +70,10 @@ export default {
 </script>
 
 <style scoped>
-/* Impedir rolagem horizontal global */
 html, body {
   overflow-x: hidden;
 }
 
-/* Sidebar fixa */
 .sidebar {
   width: 80px;
   height: 100vh;
@@ -91,7 +89,6 @@ html, body {
   overflow: hidden;
 }
 
-/* Menu da Sidebar */
 .sidebar-menu {
   list-style-type: none;
   padding: 0;
@@ -112,7 +109,6 @@ html, body {
   color: #aaa;
 }
 
-/* Bottom bar fixa */
 .bottom-bar {
   position: fixed;
   bottom: 0;
@@ -139,7 +135,6 @@ html, body {
   color: #aaa;
 }
 
-/* Esconder sidebar em mobile */
 @media (max-width: 768px) {
   .sidebar {
     display: none;

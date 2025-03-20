@@ -5,7 +5,6 @@ import AdminDashboard from '../views/AdminDashboard.vue';
 import AddAudit from '@/views/AddAudit.vue';
 import Dashboard from '@/views/Dashboard.vue';
 
-// Definição das rotas
 const routes = [
   { path: '/', redirect: '/login' },  
   { path: '/login', component: Login },  

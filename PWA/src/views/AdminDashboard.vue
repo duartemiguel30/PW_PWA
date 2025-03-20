@@ -15,7 +15,6 @@
         <router-link to="/admin-add-audit">Adicione uma aqui.</router-link>
       </div>
 
-      <!-- Exibição de Auditorias como Cards para ambos os estados -->
       <div class="audit-list">
         <AuditItem
           v-for="auditoria in auditoriasFiltradas"
@@ -64,17 +63,13 @@ export default {
       console.log("Editar auditoria com id:", id);
     },
     handleUpdate(auditoria) {
-      // Recarrega os dados atualizados da lista de auditorias
       this.carregarAuditorias();
     },
     handleConclude(auditoria) {
-      // Procura a auditoria pelo id e atualiza seu status para "terminada"
       const index = this.auditoriasData.findIndex(a => a.id === auditoria.id);
       if (index !== -1) {
         this.auditoriasData[index].status = "terminada";
-        // Atualiza os dados no localStorage
         localStorage.setItem("auditorias", JSON.stringify(this.auditoriasData));
-        // Recarrega a lista para refletir a alteração
         this.carregarAuditorias();
         console.log("Auditoria concluída:", auditoria);
       }
@@ -84,7 +79,7 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos globais e container principal */
+
 .dashboard-container {
   display: flex;
   flex-direction: column;
@@ -93,7 +88,6 @@ export default {
   background-color: #f8f9fa;
 }
 
-/* Conteúdo central com destaque */
 .dashboard-content {
   padding: 2rem;
   flex: 1;
@@ -104,7 +98,6 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Filtro moderno e minimalista */
 .filter-container {
   display: flex;
   align-items: center;
@@ -132,7 +125,6 @@ export default {
   border-color: #007bff;
 }
 
-/* Mensagem de auditoria não encontrada */
 .no-audit-message {
   font-size: 1.2rem;
   text-align: center;
@@ -144,7 +136,6 @@ export default {
   text-decoration: underline;
 }
 
-/* Cards de auditoria */
 .audit-list {
   display: grid;
   margin-top: 1rem;
