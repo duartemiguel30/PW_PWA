@@ -1,55 +1,124 @@
 <template>
   <div class="dashboard-container">
     <SidebarMenu />
-
     <div class="dashboard-content">
-      <div v-if="auditoriasData.length === 0" class="no-audit-message">
-        Nenhuma auditoria ativa.
-        <router-link to="/admin-add-audit" class="link-add">
-          Adiciona uma aqui!
-        </router-link>
-      </div>
+      <!-- Desktop: exibe tudo junto -->
+      <template v-if="isDesktop">
+        <div v-if="auditoriasData.length === 0" class="no-audit-message">
+          Nenhuma auditoria ativa.
+          <router-link to="/admin-add-audit" class="link-add">
+            Adiciona uma aqui!
+          </router-link>
+        </div>
+        <!-- Grid para os cards de métricas (5 colunas no desktop) -->
+        <div class="cards-grid desktop-cards">
+          <div class="metric-card card-total">
+            <h6 class="card-title">Total de Auditorias</h6>
+            <p class="display-number">{{ totalAuditorias }}</p>
+          </div>
+          <div class="metric-card card-abertas">
+            <h6 class="card-title">Abertas</h6>
+            <p class="display-number">{{ auditoriasAbertas }}</p>
+          </div>
+          <div class="metric-card card-terminadas">
+            <h6 class="card-title">Terminadas</h6>
+            <p class="display-number">{{ auditoriasTerminadas }}</p>
+          </div>
+          <div class="metric-card card-utilizadores">
+            <h6 class="card-title">Utilizadores registados</h6>
+            <p class="display-number">{{ totalUtilizadores }}</p>
+          </div>
+          <div class="metric-card card-faturacao">
+            <h6 class="card-title">Faturação Total (€)</h6>
+            <p class="display-number">{{ faturacaoTotal.toFixed(2) }}</p>
+          </div>
+        </div>
 
-      <!-- Grid para os cards de métricas -->
-      <div class="cards-grid">
-        <div class="metric-card card-total">
-          <h6 class="card-title">Total de Auditorias</h6>
-          <p class="display-number">{{ totalAuditorias }}</p>
+        <!-- Grid para os gráficos (auditorias e faturação) -->
+        <div class="charts-grid desktop-charts">
+          <div class="chart-card">
+            <canvas ref="auditoriasChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <canvas ref="faturacaoChart"></canvas>
+          </div>
         </div>
-        <div class="metric-card card-abertas">
-          <h6 class="card-title">Abertas</h6>
-          <p class="display-number">{{ auditoriasAbertas }}</p>
-        </div>
-        <div class="metric-card card-terminadas">
-          <h6 class="card-title">Terminadas</h6>
-          <p class="display-number">{{ auditoriasTerminadas }}</p>
-        </div>
-        <div class="metric-card card-utilizadores">
-          <h6 class="card-title">Utilizadores registados</h6>
-          <p class="display-number">{{ totalUtilizadores }}</p>
-        </div>
-        <div class="metric-card card-faturacao">
-          <h6 class="card-title">Faturação Total (€)</h6>
-          <p class="display-number">{{ faturacaoTotal.toFixed(2) }}</p>
-        </div>
-      </div>
 
-      <!-- Grid para os gráficos de auditorias e faturação -->
-      <div class="charts-grid">
-        <div class="chart-card">
-          <canvas ref="auditoriasChart"></canvas>
+        <!-- Gráfico de pizza para os materiais necessários -->
+        <div class="charts-grid desktop-charts">
+          <div class="chart-card">
+            <canvas ref="materiaisChart"></canvas>
+          </div>
         </div>
-        <div class="chart-card">
-          <canvas ref="faturacaoChart"></canvas>
-        </div>
-      </div>
+      </template>
 
-      <!-- Novo gráfico de pizza para os materiais necessários -->
-      <div class="charts-grid">
-        <div class="chart-card">
-          <canvas ref="materiaisChart"></canvas>
+      <!-- Mobile: layout com navegação por setas -->
+      <template v-else>
+        <div class="mobile-nav">
+          <button @click="prevPage" :disabled="currentPage === 0" class="nav-arrow">
+            &#9664;
+          </button>
+          <h2 class="page-title">{{ currentPageTitle }}</h2>
+          <button @click="nextPage" :disabled="currentPage === tabs.length - 1" class="nav-arrow">
+            &#9654;
+          </button>
         </div>
-      </div>
+
+        <div v-if="currentPage === 0" class="tab-content">
+          <div v-if="auditoriasData.length === 0" class="no-audit-message">
+            Nenhuma auditoria ativa.
+            <router-link to="/admin-add-audit" class="link-add">
+              Adiciona uma aqui!
+            </router-link>
+          </div>
+          <!-- Grid para os cards de métricas (2 colunas no mobile) -->
+          <div class="cards-grid mobile-cards">
+            <div class="metric-card card-total">
+              <h6 class="card-title">Total de Auditorias</h6>
+              <p class="display-number">{{ totalAuditorias }}</p>
+            </div>
+            <div class="metric-card card-abertas">
+              <h6 class="card-title">Abertas</h6>
+              <p class="display-number">{{ auditoriasAbertas }}</p>
+            </div>
+            <div class="metric-card card-terminadas">
+              <h6 class="card-title">Terminadas</h6>
+              <p class="display-number">{{ auditoriasTerminadas }}</p>
+            </div>
+          </div>
+          <!-- Grid para o gráfico de auditorias -->
+          <div class="charts-grid mobile-charts">
+            <div class="chart-card">
+              <canvas ref="auditoriasChart"></canvas>
+            </div>
+          </div>
+          <div class="mobile-bottom-padding"></div>
+        </div>
+
+        <div v-else-if="currentPage === 1" class="tab-content faturacao-tab">
+          <!-- Grid para os cards de métricas (2 colunas no mobile) -->
+          <div class="cards-grid mobile-cards">
+            <div class="metric-card card-faturacao">
+              <h6 class="card-title">Faturação Total (€)</h6>
+              <p class="display-number">{{ faturacaoTotal.toFixed(2) }}</p>
+            </div>
+            <div class="metric-card card-utilizadores">
+              <h6 class="card-title">Utilizadores registados</h6>
+              <p class="display-number">{{ totalUtilizadores }}</p>
+            </div>
+          </div>
+          <!-- Grid para os gráficos de faturação e materiais -->
+          <div class="charts-grid mobile-charts">
+            <div class="chart-card">
+              <canvas ref="faturacaoChart"></canvas>
+            </div>
+            <div class="chart-card">
+              <canvas ref="materiaisChart"></canvas>
+            </div>
+          </div>
+          <div class="mobile-bottom-padding"></div>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -61,14 +130,19 @@ import SidebarMenu from "@/components/SidebarMenu.vue";
 Chart.register(...registerables);
 
 export default {
-  components: {
-    SidebarMenu
-  },
+  components: { SidebarMenu },
   data() {
     return {
+      tabs: ["Auditorias", "Faturação & Materiais"],
+      currentPage: 0,
       auditoriasData: [],
       totalUtilizadores: 0,
       faturacaoTotal: 0,
+      // Usa layout desktop apenas se a largura for maior que 768px
+      isDesktop: window.innerWidth > 768,
+      chartAuditorias: null,
+      chartFaturacao: null,
+      chartMateriais: null,
     };
   },
   computed: {
@@ -80,12 +154,32 @@ export default {
     },
     auditoriasTerminadas() {
       return this.auditoriasData.filter(a => a.status === "terminada").length;
+    },
+    currentPageTitle() {
+      return this.tabs[this.currentPage];
     }
   },
   mounted() {
     this.carregarDados();
+    window.addEventListener("resize", this.handleResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+  },
+  watch: {
+    currentPage() {
+      this.$nextTick(() => {
+        this.mostrarGraficos();
+      });
+    }
   },
   methods: {
+    handleResize() {
+      this.isDesktop = window.innerWidth > 768;
+      this.$nextTick(() => {
+        this.mostrarGraficos();
+      });
+    },
     carregarDados() {
       const auditoriasSalvas = JSON.parse(localStorage.getItem("auditorias")) || [];
       this.auditoriasData = auditoriasSalvas;
@@ -98,15 +192,18 @@ export default {
     },
     mostrarGraficos() {
       // Gráfico de Auditorias (Bar Chart)
+      if (this.chartAuditorias) {
+        this.chartAuditorias.destroy();
+      }
       if (this.$refs.auditoriasChart) {
-        new Chart(this.$refs.auditoriasChart.getContext("2d"), {
+        this.chartAuditorias = new Chart(this.$refs.auditoriasChart.getContext("2d"), {
           type: "bar",
           data: {
             labels: ["Total", "Em Aberto", "Terminadas"],
             datasets: [{
               label: "Auditorias",
               data: [this.totalAuditorias, this.auditoriasAbertas, this.auditoriasTerminadas],
-              backgroundColor: ["#0d6efd", "#ffc107", "#198754"]
+              backgroundColor: ["#0d6efd", "#ffc107", "#198754"],
             }]
           },
           options: {
@@ -126,8 +223,11 @@ export default {
       }
 
       // Gráfico de Faturação (Line Chart)
+      if (this.chartFaturacao) {
+        this.chartFaturacao.destroy();
+      }
       if (this.$refs.faturacaoChart) {
-        new Chart(this.$refs.faturacaoChart.getContext("2d"), {
+        this.chartFaturacao = new Chart(this.$refs.faturacaoChart.getContext("2d"), {
           type: "line",
           data: {
             labels: this.auditoriasData.map(a => a.dataInicio),
@@ -135,7 +235,7 @@ export default {
               label: "Faturação (€)",
               data: this.auditoriasData.map(a => a.custoEstimado || 0),
               borderColor: "#dc3545",
-              fill: false
+              fill: false,
             }]
           },
           options: {
@@ -154,9 +254,11 @@ export default {
         });
       }
 
-      // Novo Gráfico de Pizza para Materiais Necessários
+      // Gráfico de Pizza para Materiais Necessários
+      if (this.chartMateriais) {
+        this.chartMateriais.destroy();
+      }
       if (this.$refs.materiaisChart) {
-        // Agrupar e contar os materiais de todas as auditorias
         const materialsCount = {};
         this.auditoriasData.forEach(auditoria => {
           if (auditoria.materialNecessario && Array.isArray(auditoria.materialNecessario)) {
@@ -170,8 +272,7 @@ export default {
         });
         const labels = Object.keys(materialsCount);
         const data = Object.values(materialsCount);
-
-        new Chart(this.$refs.materiaisChart.getContext("2d"), {
+        this.chartMateriais = new Chart(this.$refs.materiaisChart.getContext("2d"), {
           type: "pie",
           data: {
             labels: labels,
@@ -198,12 +299,61 @@ export default {
           }
         });
       }
+    },
+    prevPage() {
+      if (this.currentPage > 0) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.tabs.length - 1) {
+        this.currentPage++;
+      }
     }
   }
 };
 </script>
 
 <style scoped>
+/* Navegação por setas para mobile */
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 110;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-height: 4rem;
+}
+
+.page-title {
+  font-size: 1.2rem;
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+  color: #333;
+}
+
+.nav-arrow {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  /* Verde escuro com !important para forçar a cor */
+  color: #006400 !important;
+  padding: 0.25rem 0.5rem;
+}
+
+.nav-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 /* Layout geral */
 .dashboard-container {
   display: flex;
@@ -212,11 +362,17 @@ export default {
   background: #ffffff;
 }
 
+/* Para dispositivos mobile, garante que o conteúdo comece abaixo da mobile-nav */
 .dashboard-content {
   flex: 1;
-  padding: 1rem;
+  padding: 5rem 1.5rem 1.5rem; /* 5rem de topo para compensar a mobile-nav fixa */
   margin: 0 auto;
-  max-width: 65rem;
+  max-width: 90rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 /* Mensagem sem auditorias */
@@ -225,20 +381,25 @@ export default {
   text-align: center;
   margin: 1rem 0;
 }
+
 .link-add {
-  color: #0d6efd;
+  color: #006400;
   text-decoration: underline;
 }
 
 /* Grid para os cards de métricas */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
+.desktop-cards {
+  grid-template-columns: repeat(5, 1fr);
+}
+.mobile-cards {
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+}
 
-/* Estilo comum para os cards */
 .metric-card {
   background-color: #02413d;
   color: #fff;
@@ -251,15 +412,11 @@ export default {
   min-height: 120px;
   text-align: center;
 }
-
-/* Diferenciação de cores (opcional) */
 .card-total { background-color: rgba(2, 59, 28, 0.68); }
 .card-abertas { background-color: rgba(2, 59, 28, 0.68); }
 .card-terminadas { background-color: rgba(2, 59, 28, 0.68); }
 .card-utilizadores { background-color: rgba(2, 59, 28, 0.68); }
 .card-faturacao { background-color: rgba(80, 94, 86, 0.8); }
-
-/* Títulos e números dos cards */
 .card-title {
   font-size: 0.9rem;
   margin: 0;
@@ -275,38 +432,88 @@ export default {
 /* Grid para os gráficos */
 .charts-grid {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
-
+.desktop-charts {
+  grid-template-columns: repeat(2, 1fr);
+}
+.mobile-charts {
+  grid-template-columns: 1fr;
+}
 .chart-card {
   background-color: #fff;
   border-radius: 0.5rem;
   padding: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: 250px;
 }
-
 .chart-card canvas {
   width: 100% !important;
   height: 100% !important;
 }
 
-/* Versão para telas médias ou maiores */
+/* Tabs Content (Mobile) */
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: 0.5rem;
+  padding-bottom: 3rem;
+}
+
+/* Extra bottom padding para a aba Faturação & Materiais */
+.mobile-bottom-padding,
+.faturacao-tab {
+  padding-bottom: 4rem;
+}
+
+/* Botão de Ação no Card Aberto */
+.card-actions {
+  padding: 0.5rem 1rem;
+  text-align: right;
+}
+
+/* Estilos para o formulário de edição */
+.edit-form .form-group {
+  margin-bottom: 1rem;
+}
+.edit-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+.edit-form input,
+.edit-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Ajustes para dispositivos maiores */
 @media (min-width: 768px) {
-  .cards-grid {
-    grid-template-columns: repeat(3, 1fr);
+  .dashboard-content {
+    padding-left: 7rem;
+    padding-top: 2rem;
   }
-  .charts-grid {
-    grid-template-columns: 1fr 1fr;
+  .desktop-cards {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .desktop-charts {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Redução de espaçamentos para telemóvel */
+/* Ajustes específicos para telas muito pequenas */
 @media (max-width: 480px) {
   .dashboard-content {
-    padding: 0.5rem;
+    padding: 5rem 0.5rem 1.5rem;
+  }
+  .cards-grid {
+    grid-template-columns: 1fr;
   }
   .metric-card {
     padding: 0.5rem;
@@ -315,8 +522,28 @@ export default {
   .display-number {
     font-size: 1.8rem;
   }
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
   .chart-card {
     height: 200px;
+  }
+}
+
+/* Ajustes para iPad mini (até 768px) */
+@media (max-width: 768px) {
+  .dashboard-content {
+    max-width: 100%;
+    padding: 5rem 1rem 1.5rem;
+  }
+}
+
+/* Ajustes para iPad Pro (entre 768px e 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .dashboard-content {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 4rem 2rem 1.5rem;
   }
 }
 </style>
