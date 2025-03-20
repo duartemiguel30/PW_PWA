@@ -7,15 +7,22 @@
       </div>
       <div class="card-summary">
         <h2 class="title">{{ auditoria.nomeAuditoria }}</h2>
-        <p class="location"><strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}</p>
-        <p class="dates"><strong>Agendamento:</strong> {{ formatDate(auditoria.dataInicio, auditoria.horaChegada) }}
-          <span v-if="auditoria.dataFim && auditoria.horaTermino"> - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}</span>
+        <p class="location">
+          <strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}
+        </p>
+        <p class="dates">
+          <strong>Agendamento:</strong> {{ formatDate(auditoria.dataInicio, auditoria.horaChegada) }}
+          <span v-if="auditoria.dataFim && auditoria.horaTermino">
+            - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}
+          </span>
         </p>
         <div class="material">
           <h5 class="section-title">Materiais Necessários</h5>
           <p v-if="auditoria.materialNecessario.length === 0">Nenhum material especificado.</p>
           <ul v-else>
-            <li v-for="(item, index) in auditoria.materialNecessario" :key="index">{{ item }}</li>
+            <li v-for="(item, index) in auditoria.materialNecessario" :key="index">
+              {{ item }}
+            </li>
           </ul>
         </div>
       </div>
@@ -25,25 +32,80 @@
     <div v-if="showDetailsModal" class="modal-overlay" @click.self="closeDetailsModal">
       <div class="modal-content">
         <h2>Detalhes da Auditoria</h2>
-        <div class="modal-body">
+        <!-- Se não estiver em modo de edição, mostra os dados normalmente -->
+        <div v-if="!editMode" class="modal-body">
           <p><strong>Nome da Auditoria:</strong> {{ auditoria.nomeAuditoria }}</p>
-          <p v-if="auditoria.descricaoAuditoria"><strong>Descrição:</strong> {{ auditoria.descricaoAuditoria }}</p>
-          <p v-if="auditoria.tipo"><strong>Tipo:</strong> {{ auditoria.tipo }}</p>
-          <p><strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}</p>
+          <p v-if="auditoria.descricaoAuditoria">
+            <strong>Descrição:</strong> {{ auditoria.descricaoAuditoria }}
+          </p>
+          <p v-if="auditoria.tipo">
+            <strong>Tipo:</strong> {{ auditoria.tipo }}
+          </p>
+          <p>
+            <strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}
+          </p>
           <p>
             <strong>Agendamento:</strong> {{ formatDate(auditoria.dataInicio, auditoria.horaChegada) }}
-            <span v-if="auditoria.dataFim && auditoria.horaTermino"> - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}</span>
+            <span v-if="auditoria.dataFim && auditoria.horaTermino">
+              - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}
+            </span>
           </p>
           <div class="material">
             <h5>Materiais Necessários:</h5>
             <ul v-if="auditoria.materialNecessario.length > 0">
-              <li v-for="(item, index) in auditoria.materialNecessario" :key="index">{{ item }}</li>
+              <li v-for="(item, index) in auditoria.materialNecessario" :key="index">
+                {{ item }}
+              </li>
             </ul>
             <p v-else>Nenhum material especificado.</p>
           </div>
           <p><strong>Orçamento Estimado:</strong> {{ formatCurrency(auditoria.custoEstimado) }}</p>
+          <div class="modal-actions">
+            <button @click="activateEditMode">Editar</button>
+            <button @click="closeDetailsModal">Fechar</button>
+          </div>
         </div>
-        <button @click="closeDetailsModal">Fechar</button>
+        <!-- Modo de edição: campos editáveis -->
+        <div v-else class="modal-body">
+          <form @submit.prevent="saveEdits">
+            <label>Nome da Auditoria:</label>
+            <input v-model="editedAuditoria.nomeAuditoria" type="text" required />
+
+            <label>Descrição:</label>
+            <textarea v-model="editedAuditoria.descricaoAuditoria"></textarea>
+
+            <label>Tipo:</label>
+            <input v-model="editedAuditoria.tipo" type="text" />
+
+            <label>País:</label>
+            <input v-model="editedAuditoria.pais" type="text" required />
+
+            <label>Distrito:</label>
+            <input v-model="editedAuditoria.distrito" type="text" required />
+
+            <label>Morada:</label>
+            <input v-model="editedAuditoria.morada" type="text" required />
+
+            <label>Data de Início:</label>
+            <input v-model="editedAuditoria.dataInicio" type="date" required />
+
+            <label>Hora de Chegada:</label>
+            <input v-model="editedAuditoria.horaChegada" type="time" required />
+
+            <label>Data de Fim:</label>
+            <input v-model="editedAuditoria.dataFim" type="date" />
+
+            <label>Hora de Término:</label>
+            <input v-model="editedAuditoria.horaTermino" type="time" />
+
+            <!-- Adicione outros campos conforme necessário -->
+
+            <div class="modal-actions">
+              <button type="submit">Salvar</button>
+              <button type="button" @click="cancelEdit">Cancelar</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </template>
@@ -53,11 +115,18 @@
     <div class="audit-item audit-terminated card-layout" @click="openDetailsModal">
       <div class="card-summary">
         <h2 class="title">{{ auditoria.nomeAuditoria }}</h2>
-        <p class="location"><strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}</p>
-        <p class="dates"><strong>Agendamento:</strong> {{ formatDate(auditoria.dataInicio, auditoria.horaChegada) }}
-          <span v-if="auditoria.dataFim && auditoria.horaTermino"> - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}</span>
+        <p class="location">
+          <strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}
         </p>
-        <p class="cost"><strong>Custo:</strong> {{ formatCurrency(auditoria.custoEstimado) }}</p>
+        <p class="dates">
+          <strong>Agendamento:</strong> {{ formatDate(auditoria.dataInicio, auditoria.horaChegada) }}
+          <span v-if="auditoria.dataFim && auditoria.horaTermino">
+            - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}
+          </span>
+        </p>
+        <p class="cost">
+          <strong>Custo:</strong> {{ formatCurrency(auditoria.custoEstimado) }}
+        </p>
       </div>
     </div>
 
@@ -65,24 +134,81 @@
     <div v-if="showDetailsModal" class="modal-overlay" @click.self="closeDetailsModal">
       <div class="modal-content">
         <h2>Detalhes da Auditoria</h2>
-        <div class="modal-body">
+        <!-- Modo visualização -->
+        <div v-if="!editMode" class="modal-body">
           <p><strong>Nome da Auditoria:</strong> {{ auditoria.nomeAuditoria }}</p>
-          <p v-if="auditoria.descricaoAuditoria"><strong>Descrição:</strong> {{ auditoria.descricaoAuditoria }}</p>
-          <p v-if="auditoria.tipo"><strong>Tipo:</strong> {{ auditoria.tipo }}</p>
-          <p><strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}</p>
+          <p v-if="auditoria.descricaoAuditoria">
+            <strong>Descrição:</strong> {{ auditoria.descricaoAuditoria }}
+          </p>
+          <p v-if="auditoria.tipo">
+            <strong>Tipo:</strong> {{ auditoria.tipo }}
+          </p>
+          <p>
+            <strong>Local:</strong> {{ auditoria.pais }}, {{ auditoria.distrito }}, {{ auditoria.morada }}
+          </p>
           <p>
             <strong>Agendamento:</strong> {{ formatDate(auditoria.dataInicio, auditoria.horaChegada) }}
-            <span v-if="auditoria.dataFim && auditoria.horaTermino"> - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}</span>
+            <span v-if="auditoria.dataFim && auditoria.horaTermino">
+              - {{ formatDate(auditoria.dataFim, auditoria.horaTermino) }}
+            </span>
           </p>
           <div class="material" v-if="auditoria.materialNecessario.length > 0">
             <h5>Materiais Necessários:</h5>
             <ul>
-              <li v-for="(item, index) in auditoria.materialNecessario" :key="index">{{ item }}</li>
+              <li v-for="(item, index) in auditoria.materialNecessario" :key="index">
+                {{ item }}
+              </li>
             </ul>
           </div>
-          <p><strong>Custo Estimado:</strong> {{ formatCurrency(auditoria.custoEstimado) }}</p>
+          <p>
+            <strong>Custo Estimado:</strong> {{ formatCurrency(auditoria.custoEstimado) }}
+          </p>
+          <div class="modal-actions">
+            <button @click="activateEditMode">Editar</button>
+            <button @click="closeDetailsModal">Fechar</button>
+          </div>
         </div>
-        <button @click="closeDetailsModal">Fechar</button>
+        <!-- Modo edição -->
+        <div v-else class="modal-body">
+          <form @submit.prevent="saveEdits">
+            <label>Nome da Auditoria:</label>
+            <input v-model="editedAuditoria.nomeAuditoria" type="text" required />
+
+            <label>Descrição:</label>
+            <textarea v-model="editedAuditoria.descricaoAuditoria"></textarea>
+
+            <label>Tipo:</label>
+            <input v-model="editedAuditoria.tipo" type="text" />
+
+            <label>País:</label>
+            <input v-model="editedAuditoria.pais" type="text" required />
+
+            <label>Distrito:</label>
+            <input v-model="editedAuditoria.distrito" type="text" required />
+
+            <label>Morada:</label>
+            <input v-model="editedAuditoria.morada" type="text" required />
+
+            <label>Data de Início:</label>
+            <input v-model="editedAuditoria.dataInicio" type="date" required />
+
+            <label>Hora de Chegada:</label>
+            <input v-model="editedAuditoria.horaChegada" type="time" required />
+
+            <label>Data de Fim:</label>
+            <input v-model="editedAuditoria.dataFim" type="date" />
+
+            <label>Hora de Término:</label>
+            <input v-model="editedAuditoria.horaTermino" type="time" />
+
+            <!-- Outros campos conforme necessário -->
+
+            <div class="modal-actions">
+              <button type="submit">Salvar</button>
+              <button type="button" @click="cancelEdit">Cancelar</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </template>
@@ -100,6 +226,8 @@ export default {
   data() {
     return {
       showDetailsModal: false,
+      editMode: false,
+      editedAuditoria: {}
     };
   },
   methods: {
@@ -108,10 +236,31 @@ export default {
     },
     closeDetailsModal() {
       this.showDetailsModal = false;
+      this.editMode = false;
+    },
+    activateEditMode() {
+      this.editMode = true;
+      // Cria uma cópia profunda da auditoria para edição
+      this.editedAuditoria = JSON.parse(JSON.stringify(this.auditoria));
+    },
+    cancelEdit() {
+      this.editMode = false;
+    },
+    saveEdits() {
+      // Emite o evento "update" com os dados editados
+      this.$emit("update", this.editedAuditoria);
+      this.editMode = false;
+      this.showDetailsModal = false;
     },
     formatDate(date, time) {
       if (!date || !time) return "Data/Hora inválida";
-      const options = { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
+      const options = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      };
       return new Date(date + "T" + time).toLocaleDateString("pt-PT", options);
     },
     formatCurrency(value) {
@@ -127,7 +276,7 @@ export default {
 .card-layout {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin: 1rem;
   cursor: pointer;
   overflow: hidden;
@@ -196,7 +345,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -219,8 +368,13 @@ export default {
   margin: 0.5rem 0;
   color: #34495e;
 }
-.modal-content button {
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
   margin-top: 1rem;
+}
+.modal-actions button {
   padding: 0.5rem 1rem;
   background-color: #27ae60;
   color: white;
@@ -229,7 +383,7 @@ export default {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-.modal-content button:hover {
+.modal-actions button:hover {
   background-color: #1e8449;
 }
 
