@@ -23,6 +23,7 @@
           :auditoria="auditoria"
           @edit="handleEdit"
           @update="handleUpdate"
+          @conclude="handleConclude"
         />
       </div>
     </div>
@@ -63,7 +64,20 @@ export default {
       console.log("Editar auditoria com id:", id);
     },
     handleUpdate(auditoria) {
+      // Recarrega os dados atualizados da lista de auditorias
       this.carregarAuditorias();
+    },
+    handleConclude(auditoria) {
+      // Procura a auditoria pelo id e atualiza seu status para "terminada"
+      const index = this.auditoriasData.findIndex(a => a.id === auditoria.id);
+      if (index !== -1) {
+        this.auditoriasData[index].status = "terminada";
+        // Atualiza os dados no localStorage
+        localStorage.setItem("auditorias", JSON.stringify(this.auditoriasData));
+        // Recarrega a lista para refletir a alteração
+        this.carregarAuditorias();
+        console.log("Auditoria concluída:", auditoria);
+      }
     },
   },
 };

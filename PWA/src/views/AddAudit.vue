@@ -1,7 +1,6 @@
 <template>
-  <div>
+  <div class="container">
     <Sidebar />
-
     <div class="form-container">
       <h2>Criação do plano de auditoria</h2>
 
@@ -9,7 +8,6 @@
         <!-- INFORMAÇÕES DO PLANO -->
         <div class="section">
           <h3>Informações do Plano</h3>
-
           <label>Nome da Auditoria:</label>
           <input v-model="novaAuditoria.nomeAuditoria" type="text" required />
 
@@ -29,7 +27,6 @@
         <!-- LOCAIS AUDITADOS -->
         <div class="section">
           <h3>Locais Auditados</h3>
-
           <label>País:</label>
           <input v-model="novaAuditoria.pais" type="text" required />
 
@@ -48,13 +45,8 @@
         <!-- EQUIPA DE AUDITORES -->
         <div class="section">
           <h3>Equipa de Auditores</h3>
-          <!-- Lista fictícia (apenas exibição) -->
           <div class="equipa-list">
-            <div
-              v-for="(auditor, index) in equipaAuditoresFicticia"
-              :key="index"
-              class="equipa-row"
-            >
+            <div v-for="(auditor, index) in equipaAuditoresFicticia" :key="index" class="equipa-row">
               <p><strong>Nome:</strong> {{ auditor.nome }}</p>
               <p><strong>Email:</strong> {{ auditor.email }}</p>
               <p><strong>Tipo de Perito:</strong> {{ auditor.tipo }}</p>
@@ -67,11 +59,7 @@
         <div class="section">
           <h3>Materiais e Equipamentos</h3>
           <div class="material-list">
-            <!-- Apenas exibe os itens que possuem preço -->
-            <div
-              v-for="material in materiaisComPreco"
-              :key="material.nome"
-            >
+            <div v-for="material in materiaisComPreco" :key="material.nome" class="material-item">
               <input
                 type="checkbox"
                 :id="material.nome"
@@ -79,11 +67,10 @@
                 v-model="materiaisSelecionados"
               />
               <label :for="material.nome">
-                {{ material.nome }} ({{ material.preco }} €)
+                {{ material.nome }} ({{ material.preco.toFixed(2) }} €)
               </label>
             </div>
           </div>
-
           <p class="orcamento">
             <strong>Orçamento Estimado:</strong> € {{ orcamentoEstimado }}
           </p>
@@ -92,7 +79,6 @@
         <!-- AGENDAMENTO -->
         <div class="section">
           <h3>Agendamento</h3>
-
           <label>Data de Início:</label>
           <input v-model="novaAuditoria.dataInicio" type="date" required />
 
@@ -124,9 +110,7 @@
 import Sidebar from "@/components/SidebarMenu.vue";
 
 export default {
-  components: {
-    Sidebar,
-  },
+  components: { Sidebar },
   data() {
     return {
       novaAuditoria: {
@@ -145,12 +129,10 @@ export default {
         imagem: null,
         status: "aberta",
       },
-      // Lista fictícia de auditores
       equipaAuditoresFicticia: [
         { nome: "Ana Silva", email: "ana.silva@exemplo.com", tipo: "Perito Financeiro" },
         { nome: "José Santos", email: "jose.santos@exemplo.com", tipo: "Perito Qualidade" },
       ],
-      // Lista de materiais (todos com preço)
       materiais: [
         { nome: "Aluguer de computador", preco: 29.99 },
         { nome: "Gravação drone", preco: 25.99 },
@@ -162,7 +144,6 @@ export default {
         { nome: "Contrato de serviço", preco: 4.99 },
       ],
       materiaisSelecionados: [],
-      // Lista de distritos de Portugal
       distritosPortugal: [
         "Aveiro", "Beja", "Braga", "Bragança", "Castelo Branco", "Coimbra", "Évora",
         "Faro", "Guarda", "Leiria", "Lisboa", "Portalegre", "Porto", "Santarém",
@@ -171,29 +152,21 @@ export default {
     };
   },
   computed: {
-    // Filtra apenas materiais com preço > 0 (todos neste exemplo)
     materiaisComPreco() {
       return this.materiais.filter(material => material.preco > 0);
     },
-    // Calcula o orçamento estimado somando os preços dos materiais e o custo adicional por hora (8€/hora)
     orcamentoEstimado() {
       let orcamento = 0;
-      // Soma dos materiais selecionados
       this.materiaisSelecionados.forEach(material => {
         const item = this.materiais.find(m => m.nome === material);
         if (item) {
           orcamento += item.preco;
         }
       });
-      // Se houver data/hora de início e de término válidas, adiciona custo por tempo
       if (this.novaAuditoria.dataInicio && this.novaAuditoria.horaChegada) {
-        const dataInicio = new Date(
-          this.novaAuditoria.dataInicio + "T" + this.novaAuditoria.horaChegada
-        );
+        const dataInicio = new Date(this.novaAuditoria.dataInicio + "T" + this.novaAuditoria.horaChegada);
         if (this.novaAuditoria.dataFim && this.novaAuditoria.horaTermino) {
-          const dataFim = new Date(
-            this.novaAuditoria.dataFim + "T" + this.novaAuditoria.horaTermino
-          );
+          const dataFim = new Date(this.novaAuditoria.dataFim + "T" + this.novaAuditoria.horaTermino);
           if (!isNaN(dataFim.getTime()) && dataFim > dataInicio) {
             const diffHrs = (dataFim - dataInicio) / (1000 * 3600);
             orcamento += diffHrs * 8;
@@ -205,17 +178,13 @@ export default {
   },
   methods: {
     guardarAuditoria() {
-      // Define os materiais selecionados
       this.novaAuditoria.materialNecessario = this.materiaisSelecionados;
-      // Define o custo estimado
       this.novaAuditoria.custoEstimado = parseFloat(this.orcamentoEstimado);
-      // Define o status: se não houver data/hora de fim, permanece "aberta"
       if (this.novaAuditoria.dataFim && this.novaAuditoria.horaTermino) {
         this.novaAuditoria.status = "terminada";
       } else {
         this.novaAuditoria.status = "aberta";
       }
-      // Salva no localStorage
       let auditorias = JSON.parse(localStorage.getItem("auditorias")) || [];
       auditorias.push(this.novaAuditoria);
       localStorage.setItem("auditorias", JSON.stringify(auditorias));
@@ -237,40 +206,55 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos globais básicos */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-.form-container {
-  margin-left: 80px;
-  flex: 1;
-  padding: 2rem;
+/* Container principal para centralizar todo o conteúdo */
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
   background-color: #ffffff;
 }
 
+/* Formulário centralizado */
+.form-container {
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Título */
 h2 {
   margin-bottom: 1rem;
   text-align: center;
 }
 
+/* Estilos do formulário */
 form {
   width: 100%;
-  max-width: 700px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
+/* Seções do formulário */
 .section {
-  background: #f9f9f9;
+  background: #ffffff;
   border-radius: 8px;
   padding: 1rem;
+  text-align: left;
 }
 
 .section h3 {
@@ -285,6 +269,7 @@ label {
   display: block;
 }
 
+/* Inputs e outros elementos */
 input[type="text"],
 input[type="date"],
 input[type="time"],
@@ -303,20 +288,30 @@ textarea {
   resize: vertical;
 }
 
-.material-list input {
-  margin-right: 10px;
+/* Materiais e orçamento */
+.material-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
-.material-list label {
-  font-size: 1rem;
-  margin-right: 1rem;
+.material-item {
+  display: flex;
+  align-items: center;
+}
+
+.material-item input {
+  margin-right: 0.5rem;
 }
 
 .orcamento {
   margin-top: 1rem;
   font-size: 1rem;
+  text-align: center;
 }
 
+/* Botão centralizado */
 button {
   padding: 0.7rem;
   background-color: rgba(2, 59, 28, 0.68);
@@ -325,7 +320,9 @@ button {
   border-radius: 5px;
   cursor: pointer;
   font-size: 1.1rem;
-  align-self: flex-end;
+  width: 80%;
+  max-width: 300px;
+  margin: 0.5rem auto;
 }
 
 button:hover {
@@ -355,28 +352,11 @@ button:hover {
   margin: 0.5rem 0;
 }
 
+/* Ajustes para dispositivos móveis */
 @media (max-width: 768px) {
   .form-container {
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    height: auto;
     padding: 1rem;
+    margin: 1rem auto;
   }
-  form {
-    width: 90%;
-    max-width: 100%;
-  }
-}
-
-@media (min-width: 769px) {
-  .form-container {
-    margin-left: 120px;
-  }
-}
-
-.form-container {
-  padding-bottom: 80px;
 }
 </style>

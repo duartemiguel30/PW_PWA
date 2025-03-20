@@ -32,7 +32,7 @@
     <div v-if="showDetailsModal" class="modal-overlay" @click.self="closeDetailsModal">
       <div class="modal-content">
         <h2>Detalhes da Auditoria</h2>
-        <!-- Se não estiver em modo de edição, mostra os dados normalmente -->
+        <!-- Modo visualização -->
         <div v-if="!editMode" class="modal-body">
           <p><strong>Nome da Auditoria:</strong> {{ auditoria.nomeAuditoria }}</p>
           <p v-if="auditoria.descricaoAuditoria">
@@ -62,12 +62,13 @@
           <p><strong>Orçamento Estimado:</strong> {{ formatCurrency(auditoria.custoEstimado) }}</p>
           <div class="modal-actions">
             <button @click="activateEditMode">Editar</button>
+            <button @click="concludeAudit">Concluir</button>
             <button @click="closeDetailsModal">Fechar</button>
           </div>
         </div>
         <!-- Modo de edição: campos editáveis -->
         <div v-else class="modal-body">
-          <form @submit.prevent="saveEdits">
+          <form @submit.prevent="saveEdits" class="edit-form">
             <label>Nome da Auditoria:</label>
             <input v-model="editedAuditoria.nomeAuditoria" type="text" required />
 
@@ -101,7 +102,7 @@
             <!-- Adicione outros campos conforme necessário -->
 
             <div class="modal-actions">
-              <button type="submit">Salvar</button>
+              <button type="submit">Guardar</button>
               <button type="button" @click="cancelEdit">Cancelar</button>
             </div>
           </form>
@@ -170,7 +171,7 @@
         </div>
         <!-- Modo edição -->
         <div v-else class="modal-body">
-          <form @submit.prevent="saveEdits">
+          <form @submit.prevent="saveEdits" class="edit-form">
             <label>Nome da Auditoria:</label>
             <input v-model="editedAuditoria.nomeAuditoria" type="text" required />
 
@@ -204,7 +205,7 @@
             <!-- Outros campos conforme necessário -->
 
             <div class="modal-actions">
-              <button type="submit">Salvar</button>
+              <button type="submit">Guardar</button>
               <button type="button" @click="cancelEdit">Cancelar</button>
             </div>
           </form>
@@ -223,6 +224,7 @@ export default {
       required: true,
     },
   },
+  emits: ["edit", "update", "conclude"],
   data() {
     return {
       showDetailsModal: false,
@@ -240,17 +242,19 @@ export default {
     },
     activateEditMode() {
       this.editMode = true;
-      // Cria uma cópia profunda da auditoria para edição
       this.editedAuditoria = JSON.parse(JSON.stringify(this.auditoria));
     },
     cancelEdit() {
       this.editMode = false;
     },
     saveEdits() {
-      // Emite o evento "update" com os dados editados
       this.$emit("update", this.editedAuditoria);
       this.editMode = false;
       this.showDetailsModal = false;
+    },
+    concludeAudit() {
+      this.$emit("conclude", this.auditoria);
+      this.closeDetailsModal();
     },
     formatDate(date, time) {
       if (!date || !time) return "Data/Hora inválida";
@@ -385,6 +389,27 @@ export default {
 }
 .modal-actions button:hover {
   background-color: #1e8449;
+}
+
+/* Estilos para o formulário de edição aprimorado */
+.edit-form label {
+  margin-top: 1rem;
+  display: block;
+  font-weight: 500;
+}
+.edit-form input,
+.edit-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+.edit-form textarea {
+  min-height: 100px;
+  resize: vertical;
 }
 
 /* Responsividade para mobile, tablet e desktop */
