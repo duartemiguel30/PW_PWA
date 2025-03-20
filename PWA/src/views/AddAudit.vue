@@ -3,104 +3,197 @@
     <Sidebar />
     <div class="form-container">
       <h2>Criação do plano de auditoria</h2>
-
       <form @submit.prevent="guardarAuditoria">
-        <!-- INFORMAÇÕES DO PLANO -->
-        <div class="section">
-          <h3>Informações do Plano</h3>
-          <label>Nome da Auditoria:</label>
-          <input v-model="novaAuditoria.nomeAuditoria" type="text" required />
+        <!-- Modo Mobile (wizard) -->
+        <div v-if="isMobile">
+          <!-- Passo 1: Informações do Plano -->
+          <div v-show="currentStep === 0" class="section">
+            <h3>Informações do Plano</h3>
+            <label>Nome da Auditoria:</label>
+            <input v-model="novaAuditoria.nomeAuditoria" type="text" required />
+            <label>Descrição da Auditoria:</label>
+            <textarea v-model="novaAuditoria.descricaoAuditoria"></textarea>
+            <label>Tipo:</label>
+            <select v-model="novaAuditoria.tipo">
+              <option value="">Selecione...</option>
+              <option value="Externa">Externa</option>
+              <option value="Interna">Interna</option>
+              <option value="Revisão">Revisão</option>
+              <option value="Manutenção">Manutenção</option>
+            </select>
+          </div>
 
-          <label>Descrição da Auditoria:</label>
-          <textarea v-model="novaAuditoria.descricaoAuditoria"></textarea>
+          <!-- Passo 2: Locais Auditados -->
+          <div v-show="currentStep === 1" class="section">
+            <h3>Locais Auditados</h3>
+            <label>País:</label>
+            <input v-model="novaAuditoria.pais" type="text" required />
+            <label>Distrito:</label>
+            <select v-model="novaAuditoria.distrito" required>
+              <option value="">Selecione...</option>
+              <option v-for="distrito in distritosPortugal" :key="distrito" :value="distrito">
+                {{ distrito }}
+              </option>
+            </select>
+            <label>Morada:</label>
+            <input v-model="novaAuditoria.morada" type="text" required />
+          </div>
 
-          <label>Tipo:</label>
-          <select v-model="novaAuditoria.tipo">
-            <option value="">Selecione...</option>
-            <option value="Externa">Externa</option>
-            <option value="Interna">Interna</option>
-            <option value="Revisão">Revisão</option>
-            <option value="Manutenção">Manutenção</option>
-          </select>
-        </div>
-
-        <!-- LOCAIS AUDITADOS -->
-        <div class="section">
-          <h3>Locais Auditados</h3>
-          <label>País:</label>
-          <input v-model="novaAuditoria.pais" type="text" required />
-
-          <label>Distrito:</label>
-          <select v-model="novaAuditoria.distrito" required>
-            <option value="">Selecione...</option>
-            <option v-for="distrito in distritosPortugal" :key="distrito" :value="distrito">
-              {{ distrito }}
-            </option>
-          </select>
-
-          <label>Morada:</label>
-          <input v-model="novaAuditoria.morada" type="text" required />
-        </div>
-
-        <!-- EQUIPA DE AUDITORES -->
-        <div class="section">
-          <h3>Equipa de Auditores</h3>
-          <div class="equipa-list">
-            <div v-for="(auditor, index) in equipaAuditoresFicticia" :key="index" class="equipa-row">
-              <p><strong>Nome:</strong> {{ auditor.nome }}</p>
-              <p><strong>Email:</strong> {{ auditor.email }}</p>
-              <p><strong>Tipo de Perito:</strong> {{ auditor.tipo }}</p>
-              <hr v-if="index < equipaAuditoresFicticia.length - 1" />
+          <!-- Passo 3: Equipa de Auditores -->
+          <div v-show="currentStep === 2" class="section">
+            <h3>Equipa de Auditores</h3>
+            <div class="equipa-list">
+              <div v-for="(auditor, index) in equipaAuditoresFicticia" :key="index" class="equipa-row">
+                <p><strong>Nome:</strong> {{ auditor.nome }}</p>
+                <p><strong>Email:</strong> {{ auditor.email }}</p>
+                <p><strong>Tipo de Perito:</strong> {{ auditor.tipo }}</p>
+                <hr v-if="index < equipaAuditoresFicticia.length - 1" />
+              </div>
             </div>
+          </div>
+
+          <!-- Passo 4: Materiais e Equipamentos -->
+          <div v-show="currentStep === 3" class="section">
+            <h3>Materiais e Equipamentos</h3>
+            <div class="material-list">
+              <div v-for="material in materiaisComPreco" :key="material.nome" class="material-item">
+                <input
+                  type="checkbox"
+                  :id="material.nome"
+                  :value="material.nome"
+                  v-model="materiaisSelecionados"
+                />
+                <label :for="material.nome">
+                  {{ material.nome }} ({{ material.preco.toFixed(2) }} €)
+                </label>
+              </div>
+            </div>
+            <p class="orcamento">
+              <strong>Orçamento Estimado:</strong> € {{ orcamentoEstimado }}
+            </p>
+          </div>
+
+          <!-- Passo 5: Agendamento -->
+          <div v-show="currentStep === 4" class="section">
+            <h3>Agendamento</h3>
+            <label>Data de Início:</label>
+            <input v-model="novaAuditoria.dataInicio" type="date" required />
+            <label>Data de Fim (opcional):</label>
+            <input v-model="novaAuditoria.dataFim" type="date" />
+            <label>Hora de Chegada:</label>
+            <input v-model="novaAuditoria.horaChegada" type="time" required />
+            <label>Hora de Término (opcional):</label>
+            <input v-model="novaAuditoria.horaTermino" type="time" />
+          </div>
+
+          <!-- Passo 6: Upload de Imagem -->
+          <div v-show="currentStep === 5" class="section image-section">
+            <h3>Upload de Imagem (opcional)</h3>
+            <input type="file" @change="handleImageUpload" />
+          </div>
+
+          <!-- Navegação entre passos (botões uniformes) -->
+          <div class="step-navigation">
+            <button v-if="currentStep > 0" type="button" @click="prevStep">Anterior</button>
+            <button v-if="currentStep < totalSteps - 1" type="button" @click="nextStep">
+              Próximo
+            </button>
+            <button v-else type="submit">Criar</button>
           </div>
         </div>
 
-        <!-- MATERIAIS E EQUIPAMENTOS -->
-        <div class="section">
-          <h3>Materiais e Equipamentos</h3>
-          <div class="material-list">
-            <div v-for="material in materiaisComPreco" :key="material.nome" class="material-item">
-              <input
-                type="checkbox"
-                :id="material.nome"
-                :value="material.nome"
-                v-model="materiaisSelecionados"
-              />
-              <label :for="material.nome">
-                {{ material.nome }} ({{ material.preco.toFixed(2) }} €)
-              </label>
+        <!-- Modo Desktop: Exibe todas as seções -->
+        <div v-else>
+          <!-- INFORMAÇÕES DO PLANO -->
+          <div class="section">
+            <h3>Informações do Plano</h3>
+            <label>Nome da Auditoria:</label>
+            <input v-model="novaAuditoria.nomeAuditoria" type="text" required />
+            <label>Descrição da Auditoria:</label>
+            <textarea v-model="novaAuditoria.descricaoAuditoria"></textarea>
+            <label>Tipo:</label>
+            <select v-model="novaAuditoria.tipo">
+              <option value="">Selecione...</option>
+              <option value="Externa">Externa</option>
+              <option value="Interna">Interna</option>
+              <option value="Revisão">Revisão</option>
+              <option value="Manutenção">Manutenção</option>
+            </select>
+          </div>
+
+          <!-- LOCAIS AUDITADOS -->
+          <div class="section">
+            <h3>Locais Auditados</h3>
+            <label>País:</label>
+            <input v-model="novaAuditoria.pais" type="text" required />
+            <label>Distrito:</label>
+            <select v-model="novaAuditoria.distrito" required>
+              <option value="">Selecione...</option>
+              <option v-for="distrito in distritosPortugal" :key="distrito" :value="distrito">
+                {{ distrito }}
+              </option>
+            </select>
+            <label>Morada:</label>
+            <input v-model="novaAuditoria.morada" type="text" required />
+          </div>
+
+          <!-- EQUIPA DE AUDITORES -->
+          <div class="section">
+            <h3>Equipa de Auditores</h3>
+            <div class="equipa-list">
+              <div v-for="(auditor, index) in equipaAuditoresFicticia" :key="index" class="equipa-row">
+                <p><strong>Nome:</strong> {{ auditor.nome }}</p>
+                <p><strong>Email:</strong> {{ auditor.email }}</p>
+                <p><strong>Tipo de Perito:</strong> {{ auditor.tipo }}</p>
+                <hr v-if="index < equipaAuditoresFicticia.length - 1" />
+              </div>
             </div>
           </div>
-          <p class="orcamento">
-            <strong>Orçamento Estimado:</strong> € {{ orcamentoEstimado }}
-          </p>
+
+          <!-- MATERIAIS E EQUIPAMENTOS -->
+          <div class="section">
+            <h3>Materiais e Equipamentos</h3>
+            <div class="material-list">
+              <div v-for="material in materiaisComPreco" :key="material.nome" class="material-item">
+                <input
+                  type="checkbox"
+                  :id="material.nome"
+                  :value="material.nome"
+                  v-model="materiaisSelecionados"
+                />
+                <label :for="material.nome">
+                  {{ material.nome }} ({{ material.preco.toFixed(2) }} €)
+                </label>
+              </div>
+            </div>
+            <p class="orcamento">
+              <strong>Orçamento Estimado:</strong> € {{ orcamentoEstimado }}
+            </p>
+          </div>
+
+          <!-- AGENDAMENTO -->
+          <div class="section">
+            <h3>Agendamento</h3>
+            <label>Data de Início:</label>
+            <input v-model="novaAuditoria.dataInicio" type="date" required />
+            <label>Data de Fim (opcional):</label>
+            <input v-model="novaAuditoria.dataFim" type="date" />
+            <label>Hora de Chegada:</label>
+            <input v-model="novaAuditoria.horaChegada" type="time" required />
+            <label>Hora de Término (opcional):</label>
+            <input v-model="novaAuditoria.horaTermino" type="time" />
+          </div>
+
+          <!-- UPLOAD DE IMAGEM (opcional) -->
+          <div class="section image-section">
+            <h3>Upload de Imagem (opcional)</h3>
+            <input type="file" @change="handleImageUpload" />
+          </div>
+
+          <!-- Botão de submissão para desktop -->
+          <button type="submit">Criar Plano de Auditoria</button>
         </div>
-
-        <!-- AGENDAMENTO -->
-        <div class="section">
-          <h3>Agendamento</h3>
-          <label>Data de Início:</label>
-          <input v-model="novaAuditoria.dataInicio" type="date" required />
-
-          <label>Data de Fim (opcional):</label>
-          <input v-model="novaAuditoria.dataFim" type="date" />
-
-          <label>Hora de Chegada:</label>
-          <input v-model="novaAuditoria.horaChegada" type="time" required />
-
-          <label>Hora de Término (opcional):</label>
-          <input v-model="novaAuditoria.horaTermino" type="time" />
-        </div>
-
-        <!-- UPLOAD DE IMAGEM (opcional) -->
-        <div class="section">
-          <label>Imagem (opcional):</label>
-          <input type="file" @change="handleImageUpload" />
-        </div>
-
-        <button type="submit">Criar Plano de Auditoria</button>
       </form>
-
       <router-link to="/admin-dashboard" class="back-link">Voltar ao Painel</router-link>
     </div>
   </div>
@@ -149,6 +242,9 @@ export default {
         "Faro", "Guarda", "Leiria", "Lisboa", "Portalegre", "Porto", "Santarém",
         "Setúbal", "Viana do Castelo", "Vila Real", "Viseu"
       ],
+      currentStep: 0,
+      totalSteps: 6,
+      isMobile: false,
     };
   },
   computed: {
@@ -176,7 +272,27 @@ export default {
       return orcamento.toFixed(2);
     },
   },
+  mounted() {
+    this.checkMobile();
+    window.addEventListener("resize", this.checkMobile);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.checkMobile);
+  },
   methods: {
+    checkMobile() {
+      this.isMobile = window.innerWidth < 1024;
+    },
+    nextStep() {
+      if (this.currentStep < this.totalSteps - 1) {
+        this.currentStep++;
+      }
+    },
+    prevStep() {
+      if (this.currentStep > 0) {
+        this.currentStep--;
+      }
+    },
     guardarAuditoria() {
       this.novaAuditoria.materialNecessario = this.materiaisSelecionados;
       this.novaAuditoria.custoEstimado = parseFloat(this.orcamentoEstimado);
@@ -185,6 +301,8 @@ export default {
       } else {
         this.novaAuditoria.status = "aberta";
       }
+      // Gera um ID único para cada auditoria
+      this.novaAuditoria.id = Date.now();
       let auditorias = JSON.parse(localStorage.getItem("auditorias")) || [];
       auditorias.push(this.novaAuditoria);
       localStorage.setItem("auditorias", JSON.stringify(auditorias));
@@ -231,7 +349,7 @@ export default {
   background-color: #ffffff;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   text-align: center;
 }
 
@@ -311,8 +429,15 @@ textarea {
   text-align: center;
 }
 
-/* Botão centralizado */
-button {
+/* Navegação de passos (Mobile) - Botões uniformes */
+.step-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.step-navigation button {
   padding: 0.7rem;
   background-color: rgba(2, 59, 28, 0.68);
   color: white;
@@ -325,10 +450,38 @@ button {
   margin: 0.5rem auto;
 }
 
-button:hover {
+.step-navigation button:hover {
   background-color: rgb(12, 49, 1);
 }
 
+/* Botão de submissão para desktop */
+button[type="submit"] {
+  padding: 0.7rem;
+  background-color: rgba(2, 59, 28, 0.68);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  width: 80%;
+  max-width: 300px;
+  margin: 0.5rem auto;
+}
+
+button[type="submit"]:hover {
+  background-color: rgb(12, 49, 1);
+}
+
+/* Estilo para a seção de upload de imagem */
+.image-section {
+  padding: 0.5rem;
+  text-align: center;
+}
+.image-section input[type="file"] {
+  font-size: 0.9rem;
+}
+
+/* Back link */
 .back-link {
   margin-top: 1rem;
   text-decoration: none;
@@ -339,6 +492,7 @@ button:hover {
   text-decoration: underline;
 }
 
+/* Equipa */
 .equipa-list {
   border: 1px solid #ccc;
   padding: 0.5rem;
@@ -352,7 +506,6 @@ button:hover {
   margin: 0.5rem 0;
 }
 
-/* Ajustes para dispositivos móveis */
 @media (max-width: 768px) {
   .form-container {
     padding: 1rem;
