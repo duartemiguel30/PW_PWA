@@ -3,52 +3,54 @@
     <SidebarMenu />
     <div class="dashboard-content">
       <template v-if="isDesktop">
-        <div v-if="auditoriasData.length === 0" class="no-audit-message">
-          Nenhuma auditoria ativa.
-          <router-link to="/admin-add-audit" class="link-add">
-            Adiciona uma aqui!
-          </router-link>
-        </div>
-        <div class="cards-grid desktop-cards">
-          <div class="metric-card card-total">
-            <h6 class="card-title">Total de Auditorias</h6>
-            <p class="display-number">{{ totalAuditorias }}</p>
+        <!-- Top row: Gráfico de faturação destacado e cards -->
+        <div class="top-row">
+          <div class="faturacao-chart-highlight">
+            <canvas ref="faturacaoChart"></canvas>
           </div>
-          <div class="metric-card card-abertas">
-            <h6 class="card-title">Abertas</h6>
-            <p class="display-number">{{ auditoriasAbertas }}</p>
-          </div>
-          <div class="metric-card card-terminadas">
-            <h6 class="card-title">Terminadas</h6>
-            <p class="display-number">{{ auditoriasTerminadas }}</p>
-          </div>
-          <div class="metric-card card-utilizadores">
-            <h6 class="card-title">Utilizadores registados</h6>
-            <p class="display-number">{{ totalUtilizadores }}</p>
-          </div>
-          <div class="metric-card card-faturacao">
-            <h6 class="card-title">Faturação Total (€)</h6>
-            <p class="display-number">{{ faturacaoTotal.toFixed(2) }}</p>
+          <div class="cards-side">
+            <div class="metric-card card-faturacao">
+              <h6 class="card-title">Faturação Total (€)</h6>
+              <p class="display-number">{{ faturacaoTotal.toFixed(2) }}</p>
+            </div>
+            <div class="metric-card card-total">
+              <h6 class="card-title">Total de Auditorias</h6>
+              <p class="display-number">{{ totalAuditorias }}</p>
+            </div>
           </div>
         </div>
 
+        <!-- Segunda row: Gráficos de auditorias e materiais -->
         <div class="charts-grid desktop-charts">
           <div class="chart-card">
             <canvas ref="auditoriasChart"></canvas>
           </div>
           <div class="chart-card">
-            <canvas ref="faturacaoChart"></canvas>
+            <canvas ref="materiaisChart"></canvas>
           </div>
         </div>
 
-        <div class="charts-grid desktop-charts">
-          <div class="chart-card">
-            <canvas ref="materiaisChart"></canvas>
-          </div>
+        <!-- Terceira row: Lista de utilizadores registados -->
+        <div class="users-list-container">
+          <h3>Utilizadores Registados</h3>
+          <table class="users-list">
+            <tbody>
+              <tr v-for="(user, index) in usersList" :key="index" class="user-row">
+                <td class="user-info">
+                  <h4>{{ user.name }}</h4>
+                  <p>{{ user.email }}</p>
+                </td>
+                <td class="arrow-cell">
+                  <span class="arrow">&#9654;</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </template>
 
       <template v-else>
+        <!-- Layout Mobile -->
         <div class="mobile-nav">
           <button @click="prevPage" :disabled="currentPage === 0" class="nav-arrow">
             &#9664;
@@ -129,6 +131,7 @@ export default {
       auditoriasData: [],
       totalUtilizadores: 0,
       faturacaoTotal: 0,
+      usersList: [],
       isDesktop: window.innerWidth > 768,
       chartAuditorias: null,
       chartFaturacao: null,
@@ -173,7 +176,11 @@ export default {
     carregarDados() {
       const auditoriasSalvas = JSON.parse(localStorage.getItem("auditorias")) || [];
       this.auditoriasData = auditoriasSalvas;
-      this.totalUtilizadores = (JSON.parse(localStorage.getItem("users")) || []).length;
+
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      this.totalUtilizadores = users.length;
+      this.usersList = users;
+
       this.faturacaoTotal = this.auditoriasData.reduce(
         (acc, auditoria) => acc + (auditoria.custoEstimado || 0),
         0
@@ -181,6 +188,7 @@ export default {
       this.mostrarGraficos();
     },
     mostrarGraficos() {
+      // Gráfico de Auditorias
       if (this.chartAuditorias) {
         this.chartAuditorias.destroy();
       }
@@ -211,6 +219,7 @@ export default {
         });
       }
 
+      // Gráfico de Faturação – linha com borderWidth para forçar exibição
       if (this.chartFaturacao) {
         this.chartFaturacao.destroy();
       }
@@ -222,7 +231,8 @@ export default {
             datasets: [{
               label: "Faturação (€)",
               data: this.auditoriasData.map(a => a.custoEstimado || 0),
-              borderColor: "#dc3545",
+              borderColor: "#003366",
+              borderWidth: 2,
               fill: false,
             }]
           },
@@ -232,16 +242,17 @@ export default {
             scales: {
               y: {
                 beginAtZero: true,
-                ticks: { color: "#333", font: { size: 12 } }
+                ticks: { color: "#fff", font: { size: 12 } }
               },
               x: {
-                ticks: { color: "#333", font: { size: 12 } }
+                ticks: { color: "#fff", font: { size: 12 } }
               }
             }
           }
         });
       }
 
+      // Gráfico de Materiais
       if (this.chartMateriais) {
         this.chartMateriais.destroy();
       }
@@ -262,13 +273,13 @@ export default {
         this.chartMateriais = new Chart(this.$refs.materiaisChart.getContext("2d"), {
           type: "pie",
           data: {
-            labels: labels,
+            labels,
             datasets: [{
               label: "Materiais Necessários",
-              data: data,
-              backgroundColor: labels.map((_, index) => {
+              data,
+              backgroundColor: labels.map((_, i) => {
                 const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
-                return colors[index % colors.length];
+                return colors[i % colors.length];
               })
             }]
           },
@@ -302,88 +313,53 @@ export default {
 </script>
 
 <style scoped>
-.mobile-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 110;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-height: 4rem;
-}
-
-.page-title {
-  font-size: 1.2rem;
-  margin: 0;
-  flex-grow: 1;
-  text-align: center;
-  color: #333;
-}
-
-.nav-arrow {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #006400 !important;
-  padding: 0.25rem 0.5rem;
-}
-
-.nav-arrow:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
+/* Fundo da página em cinza clarinho */
 .dashboard-container {
   display: flex;
   height: 100vh;
   overflow-x: hidden;
-  background: #ffffff;
+  background: #f0f0f0;
 }
 
+/* Mantém max-width de 1100px */
 .dashboard-content {
   flex: 1;
-  padding: 5rem 1.5rem 1.5rem; 
+  max-width: 1100px;
+  padding: 5rem 1.5rem 1.5rem;
   margin: 0 auto;
-  max-width: 90rem;
+  width: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
 }
 
-.no-audit-message {
-  font-size: 1.2rem;
-  text-align: center;
-  margin: 1rem 0;
-}
-
-.link-add {
-  color: #006400;
-  text-decoration: underline;
-}
-
-.cards-grid {
-  display: grid;
-  gap: 0.75rem;
+/* Layout Desktop */
+.top-row {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
   margin-bottom: 1rem;
 }
-.desktop-cards {
-  grid-template-columns: repeat(5, 1fr);
+/* Fundo do gráfico de faturação com azul mais escuro */
+.faturacao-chart-highlight {
+  flex: 2;
+  background-color: #003366;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  position: relative;
+  height: 300px;
 }
-.mobile-cards {
-  grid-template-columns: repeat(2, minmax(140px, 1fr));
+.cards-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
 }
 
+/* Cards */
 .metric-card {
-  background-color: #02413d;
-  color: #fff;
   border-radius: 0.5rem;
   padding: 0.75rem;
   display: flex;
@@ -393,33 +369,24 @@ export default {
   min-height: 120px;
   text-align: center;
 }
-.card-total { background-color: rgba(2, 59, 28, 0.68); }
-.card-abertas { background-color: rgba(2, 59, 28, 0.68); }
-.card-terminadas { background-color: rgba(2, 59, 28, 0.68); }
-.card-utilizadores { background-color: rgba(2, 59, 28, 0.68); }
-.card-faturacao { background-color: rgba(80, 94, 86, 0.8); }
-.card-title {
-  font-size: 0.9rem;
-  margin: 0;
-  text-transform: uppercase;
+.card-faturacao {
+  background-color: #90EE90;
+  color: #fff;
 }
-.display-number {
-  font-size: 2.2rem;
-  font-weight: bold;
-  margin-top: 0.25rem;
-  word-break: break-all;
+.card-total {
+  background-color: #fff;
+  color: #333;
 }
 
+/* Gráficos */
 .charts-grid {
   display: grid;
   gap: 0.75rem;
+  width: 100%;
   margin-bottom: 1rem;
 }
 .desktop-charts {
   grid-template-columns: repeat(2, 1fr);
-}
-.mobile-charts {
-  grid-template-columns: 1fr;
 }
 .chart-card {
   background-color: #fff;
@@ -433,61 +400,100 @@ export default {
   height: 100% !important;
 }
 
-.tab-content {
-  display: flex;
-  flex-direction: column;
+/* Lista de Utilizadores */
+.users-list-container {
   width: 100%;
-  padding-top: 0.5rem;
-  padding-bottom: 3rem;
+  margin-top: 1rem;
+  padding: 0 1rem;
+}
+.users-list {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+}
+.user-row {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: background-color 0.2s ease;
+}
+.user-row:hover {
+  background-color: #f9f9f9;
+}
+.user-info {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+.arrow-cell {
+  width: 2rem;
+  text-align: center;
+  color: #ccc;
+}
+.arrow {
+  font-size: 1.2rem;
+  color: #bbb;
 }
 
+/* Layout Mobile */
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 110;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-height: 4rem;
+}
+.page-title {
+  font-size: 1.2rem;
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+  color: #333;
+}
+.nav-arrow {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #006400 !important;
+  padding: 0.25rem 0.5rem;
+}
+.nav-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.cards-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.mobile-cards {
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+}
 .mobile-bottom-padding,
 .faturacao-tab {
   padding-bottom: 4rem;
 }
 
-.card-actions {
-  padding: 0.5rem 1rem;
-  text-align: right;
-}
-
-.edit-form .form-group {
-  margin-bottom: 1rem;
-}
-.edit-form label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.3rem;
-}
-.edit-form input,
-.edit-form textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
-
-@media (min-width: 768px) {
-  .dashboard-content {
-    padding-left: 7rem;
-    padding-top: 2rem;
-  }
-  .desktop-cards {
-    grid-template-columns: repeat(5, 1fr);
-  }
-  .desktop-charts {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+/* Mobile: alternar fundo dos cards entre verde e branco */
 @media (max-width: 480px) {
   .dashboard-content {
     padding: 5rem 0.5rem 1.5rem;
   }
   .cards-grid {
     grid-template-columns: 1fr;
+  }
+  .mobile-cards .metric-card:nth-child(odd) {
+    background-color: #90EE90 !important;
+  }
+  .mobile-cards .metric-card:nth-child(even) {
+    background-color: #fff !important;
   }
   .metric-card {
     padding: 0.5rem;
@@ -504,18 +510,30 @@ export default {
   }
 }
 
-@media (max-width: 768px) {
+/* iPad mini: dispositivos entre 600px e 768px – layout igual ao mobile */
+@media (min-width: 600px) and (max-width: 768px) {
   .dashboard-content {
-    max-width: 100%;
-    padding: 5rem 1rem 1.5rem;
+    margin-left: 0 !important;
+    padding: 5rem 0.5rem 1.5rem;
   }
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+/* iPad Air: dispositivos entre 769px e 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
   .dashboard-content {
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 4rem 2rem 1.5rem;
+    position: relative;
+    z-index: 1;
+    margin-left: 20rem; /* Evita sobreposição da Sidebar */
+    padding-top: 2rem;
+  }
+}
+
+/* Responsividade adicional para telas maiores */
+@media (min-width: 1025px) {
+  .dashboard-content {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 2rem;
   }
 }
 </style>
