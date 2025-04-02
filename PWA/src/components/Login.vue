@@ -6,7 +6,10 @@
         <input type="email" placeholder="Email" v-model="email" />
         <input type="password" placeholder="Password" v-model="password" />
         <button @click="login">Sign In</button>
-        <p>Ainda não tens uma conta? <router-link to="/register">Regista-te</router-link></p>
+        <p>
+          Ainda não tens uma conta?
+          <router-link to="/register">Regista-te</router-link>
+        </p>
       </div>
     </div>
     <div class="auth-right"></div>
@@ -22,28 +25,32 @@ export default {
     };
   },
   methods: {
-  login() {
-    const adminEmail = 'admin@admin.com';
-    const adminPassword = '1234';
+    login() {
+      const adminEmail = 'admin@admin.com';
+      const adminPassword = '1234';
 
-    if (this.email === adminEmail && this.password === adminPassword) {
-      localStorage.setItem('isAuthenticated', true); 
-      localStorage.setItem('isAdmin', true); 
-      this.$router.push('/admin-dashboard');
-      return;
-    }
+      if (this.email === adminEmail && this.password === adminPassword) {
+        localStorage.setItem('isAuthenticated', true);
+        localStorage.setItem('isAdmin', true);
+        // Guarda as informações do admin
+        localStorage.setItem('loggedUser', JSON.stringify({ name: 'Admin', email: adminEmail }));
+        this.$router.push('/admin-dashboard');
+        return;
+      }
 
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find(u => u.email === this.email && u.password === this.password);
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const user = users.find(u => u.email === this.email && u.password === this.password);
 
-    if (user) {
-      localStorage.setItem('isAuthenticated', true); 
-      this.$router.push('/admin-dashboard'); 
-    } else {
-      alert('Credenciais inválidas!');
-    }
+      if (user) {
+        localStorage.setItem('isAuthenticated', true);
+        // Guarda as informações do usuário que fez login
+        localStorage.setItem('loggedUser', JSON.stringify(user));
+        this.$router.push('/admin-dashboard');
+      } else {
+        alert('Credenciais inválidas!');
+      }
+    },
   },
-}
 };
 </script>
 

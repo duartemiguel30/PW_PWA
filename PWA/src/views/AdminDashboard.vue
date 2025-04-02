@@ -83,7 +83,7 @@ export default {
   display: flex;
   min-height: 100vh;
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  background-color: #f8f9fa;
+  background: #f0f0f0;
 }
 
 .dashboard-content {
@@ -91,7 +91,7 @@ export default {
   padding: 2rem;
   margin-left: 2rem;
   max-width: calc(100% - 5rem);
-  background-color: #ffffff;
+  background: #f0f0f0;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }

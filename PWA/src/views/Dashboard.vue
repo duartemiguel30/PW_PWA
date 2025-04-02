@@ -1,15 +1,18 @@
 <template>
-  <div class="dashboard-container">
+  <div class="dashboard-container container-fluid">
     <SidebarMenu />
-    <div class="dashboard-content">
+    <div class="dashboard-content container">
+      <div class="alert alert-info text-center w-100 greeting-msg" role="alert">
+        Bem vindo de volta, {{ user.name }}!
+      </div>
+
       <template v-if="isDesktop">
-        <!-- Top row: Gráfico de faturação destacado e cards -->
-        <div class="top-row">
-          <div class="faturacao-chart-highlight">
+        <div class="top-row row w-100 mb-3">
+          <div class="faturacao-chart-highlight col-md-8">
             <canvas ref="faturacaoChart"></canvas>
           </div>
-          <div class="cards-side">
-            <div class="metric-card card-faturacao">
+          <div class="cards-side col-md-4 d-flex flex-column justify-content-center">
+            <div class="metric-card card-faturacao mb-3">
               <h6 class="card-title">Faturação Total (€)</h6>
               <p class="display-number">{{ faturacaoTotal.toFixed(2) }}</p>
             </div>
@@ -20,25 +23,23 @@
           </div>
         </div>
 
-        <!-- Segunda row: Gráficos de auditorias e materiais -->
-        <div class="charts-grid desktop-charts">
-          <div class="chart-card">
+        <div class="charts-grid desktop-charts row w-100 mb-2">
+          <div class="chart-card col-md-6 mb-3 mb-md-0">
             <canvas ref="auditoriasChart"></canvas>
           </div>
-          <div class="chart-card">
+          <div class="chart-card col-md-6">
             <canvas ref="materiaisChart"></canvas>
           </div>
         </div>
 
-        <!-- Terceira row: Lista de utilizadores registados -->
-        <div class="users-list-container">
+        <div class="users-list-container w-100">
           <h3>Utilizadores Registados</h3>
-          <table class="users-list">
+          <table class="users-list table table-borderless">
             <tbody>
-              <tr v-for="(user, index) in usersList" :key="index" class="user-row">
+              <tr v-for="(userItem, index) in usersList" :key="index" class="user-row">
                 <td class="user-info">
-                  <h4>{{ user.name }}</h4>
-                  <p>{{ user.email }}</p>
+                  <h4>{{ userItem.name }}</h4>
+                  <p>{{ userItem.email }}</p>
                 </td>
                 <td class="arrow-cell">
                   <span class="arrow">&#9654;</span>
@@ -50,62 +51,61 @@
       </template>
 
       <template v-else>
-        <!-- Layout Mobile -->
-        <div class="mobile-nav">
-          <button @click="prevPage" :disabled="currentPage === 0" class="nav-arrow">
+        <div class="mobile-nav fixed-top d-flex justify-content-between align-items-center px-3 py-2 bg-white shadow-sm">
+          <button @click="prevPage" :disabled="currentPage === 0" class="nav-arrow btn btn-link p-0">
             &#9664;
           </button>
-          <h2 class="page-title">{{ currentPageTitle }}</h2>
-          <button @click="nextPage" :disabled="currentPage === tabs.length - 1" class="nav-arrow">
+          <h2 class="page-title flex-grow-1 text-center m-0 text-dark">{{ currentPageTitle }}</h2>
+          <button @click="nextPage" :disabled="currentPage === tabs.length - 1" class="nav-arrow btn btn-link p-0">
             &#9654;
           </button>
         </div>
 
-        <div v-if="currentPage === 0" class="tab-content">
+        <div v-if="currentPage === 0" class="tab-content mt-3 pt-3">
           <div v-if="auditoriasData.length === 0" class="no-audit-message">
             Nenhuma auditoria ativa.
             <router-link to="/admin-add-audit" class="link-add">
               Adiciona uma aqui!
             </router-link>
           </div>
-          <div class="cards-grid mobile-cards">
-            <div class="metric-card card-total">
+          <div class="cards-grid mobile-cards row">
+            <div class="metric-card mobile-card col-6">
               <h6 class="card-title">Total de Auditorias</h6>
               <p class="display-number">{{ totalAuditorias }}</p>
             </div>
-            <div class="metric-card card-abertas">
+            <div class="metric-card mobile-card col-6">
               <h6 class="card-title">Abertas</h6>
               <p class="display-number">{{ auditoriasAbertas }}</p>
             </div>
-            <div class="metric-card card-terminadas">
+            <div class="metric-card mobile-card col-6">
               <h6 class="card-title">Terminadas</h6>
               <p class="display-number">{{ auditoriasTerminadas }}</p>
             </div>
           </div>
-          <div class="charts-grid mobile-charts">
-            <div class="chart-card">
+          <div class="charts-grid mobile-charts row mb-3">
+            <div class="chart-card col-12">
               <canvas ref="auditoriasChart"></canvas>
             </div>
           </div>
           <div class="mobile-bottom-padding"></div>
         </div>
 
-        <div v-else-if="currentPage === 1" class="tab-content faturacao-tab">
-          <div class="cards-grid mobile-cards">
-            <div class="metric-card card-faturacao">
+        <div v-else-if="currentPage === 1" class="tab-content faturacao-tab mt-3 pt-3">
+          <div class="cards-grid mobile-cards row">
+            <div class="metric-card mobile-card col-6">
               <h6 class="card-title">Faturação Total (€)</h6>
               <p class="display-number">{{ faturacaoTotal.toFixed(2) }}</p>
             </div>
-            <div class="metric-card card-utilizadores">
+            <div class="metric-card mobile-card col-6">
               <h6 class="card-title">Utilizadores registados</h6>
               <p class="display-number">{{ totalUtilizadores }}</p>
             </div>
           </div>
-          <div class="charts-grid mobile-charts">
-            <div class="chart-card">
+          <div class="charts-grid mobile-charts row mb-3">
+            <div class="chart-card faturacao-chart-mobile col-6">
               <canvas ref="faturacaoChart"></canvas>
             </div>
-            <div class="chart-card">
+            <div class="chart-card col-6">
               <canvas ref="materiaisChart"></canvas>
             </div>
           </div>
@@ -119,7 +119,6 @@
 <script>
 import { Chart, registerables } from "chart.js";
 import SidebarMenu from "@/components/SidebarMenu.vue";
-
 Chart.register(...registerables);
 
 export default {
@@ -136,6 +135,7 @@ export default {
       chartAuditorias: null,
       chartFaturacao: null,
       chartMateriais: null,
+      user: { name: "Utilizador" },
     };
   },
   computed: {
@@ -181,6 +181,11 @@ export default {
       this.totalUtilizadores = users.length;
       this.usersList = users;
 
+      const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+      if (loggedUser) {
+        this.user = loggedUser;
+      }
+
       this.faturacaoTotal = this.auditoriasData.reduce(
         (acc, auditoria) => acc + (auditoria.custoEstimado || 0),
         0
@@ -188,7 +193,6 @@ export default {
       this.mostrarGraficos();
     },
     mostrarGraficos() {
-      // Gráfico de Auditorias
       if (this.chartAuditorias) {
         this.chartAuditorias.destroy();
       }
@@ -219,11 +223,11 @@ export default {
         });
       }
 
-      // Gráfico de Faturação – linha com borderWidth para forçar exibição
       if (this.chartFaturacao) {
         this.chartFaturacao.destroy();
       }
       if (this.$refs.faturacaoChart) {
+        const config = { fill: false, borderColor: "#90EE90", backgroundColor: "transparent" };
         this.chartFaturacao = new Chart(this.$refs.faturacaoChart.getContext("2d"), {
           type: "line",
           data: {
@@ -231,9 +235,11 @@ export default {
             datasets: [{
               label: "Faturação (€)",
               data: this.auditoriasData.map(a => a.custoEstimado || 0),
-              borderColor: "#003366",
+              borderColor: config.borderColor,
               borderWidth: 2,
-              fill: false,
+              fill: config.fill,
+              backgroundColor: config.backgroundColor,
+              tension: 0
             }]
           },
           options: {
@@ -242,17 +248,24 @@ export default {
             scales: {
               y: {
                 beginAtZero: true,
-                ticks: { color: "#fff", font: { size: 12 } }
+                ticks: { color: "#ffffff", font: { size: 12 } }
               },
               x: {
-                ticks: { color: "#fff", font: { size: 12 } }
+                ticks: { color: "#ffffff", font: { size: 12 } }
+              }
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: "#ffffff",
+                  font: { size: 12 }
+                }
               }
             }
           }
         });
       }
 
-      // Gráfico de Materiais
       if (this.chartMateriais) {
         this.chartMateriais.destroy();
       }
@@ -313,19 +326,27 @@ export default {
 </script>
 
 <style scoped>
-/* Fundo da página em cinza clarinho */
 .dashboard-container {
   display: flex;
-  height: 100vh;
-  overflow-x: hidden;
   background: #f0f0f0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+@media (min-width: 769px) {
+  .dashboard-container {
+    height: 100vh;
+  }
+}
+@media (max-width: 768px) {
+  .dashboard-container {
+    height: auto;
+  }
 }
 
-/* Mantém max-width de 1100px */
 .dashboard-content {
   flex: 1;
   max-width: 1100px;
-  padding: 5rem 1.5rem 1.5rem;
+  padding: 3rem 1.5rem 1.5rem;
   margin: 0 auto;
   width: 100%;
   text-align: center;
@@ -334,14 +355,21 @@ export default {
   align-items: center;
 }
 
-/* Layout Desktop */
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding-top: 3rem;
+  }
+  .greeting-msg {
+    margin-bottom: 0.5rem;
+  }
+}
+
 .top-row {
   display: flex;
   gap: 1rem;
   width: 100%;
   margin-bottom: 1rem;
 }
-/* Fundo do gráfico de faturação com azul mais escuro */
 .faturacao-chart-highlight {
   flex: 2;
   background-color: #003366;
@@ -358,7 +386,6 @@ export default {
   justify-content: center;
 }
 
-/* Cards */
 .metric-card {
   border-radius: 0.5rem;
   padding: 0.75rem;
@@ -368,6 +395,7 @@ export default {
   justify-content: center;
   min-height: 120px;
   text-align: center;
+  margin-bottom: 1rem;
 }
 .card-faturacao {
   background-color: #90EE90;
@@ -378,16 +406,20 @@ export default {
   color: #333;
 }
 
-/* Gráficos */
-.charts-grid {
-  display: grid;
-  gap: 0.75rem;
-  width: 100%;
-  margin-bottom: 1rem;
+@media (max-width: 768px) {
+  .mobile-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .mobile-cards .mobile-card {
+    background-color: #90EE90 !important;
+    color: #fff !important;
+    flex: 0 0 calc(50% - 1rem);
+    padding: 0.5rem;
+  }
 }
-.desktop-charts {
-  grid-template-columns: repeat(2, 1fr);
-}
+
 .chart-card {
   background-color: #fff;
   border-radius: 0.5rem;
@@ -395,12 +427,14 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: 250px;
 }
+.faturacao-chart-mobile {
+  background-color: #003366 !important;
+}
 .chart-card canvas {
   width: 100% !important;
   height: 100% !important;
 }
 
-/* Lista de Utilizadores */
 .users-list-container {
   width: 100%;
   margin-top: 1rem;
@@ -431,10 +465,9 @@ export default {
 }
 .arrow {
   font-size: 1.2rem;
-  color: #bbb;
+  color: #008000;
 }
 
-/* Layout Mobile */
 .mobile-nav {
   position: fixed;
   top: 0;
@@ -461,79 +494,11 @@ export default {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #006400 !important;
+  color: #008000 !important;
   padding: 0.25rem 0.5rem;
 }
 .nav-arrow:disabled {
   opacity: 0.3;
   cursor: default;
-}
-.cards-grid {
-  display: grid;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-.mobile-cards {
-  grid-template-columns: repeat(2, minmax(140px, 1fr));
-}
-.mobile-bottom-padding,
-.faturacao-tab {
-  padding-bottom: 4rem;
-}
-
-/* Mobile: alternar fundo dos cards entre verde e branco */
-@media (max-width: 480px) {
-  .dashboard-content {
-    padding: 5rem 0.5rem 1.5rem;
-  }
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
-  .mobile-cards .metric-card:nth-child(odd) {
-    background-color: #90EE90 !important;
-  }
-  .mobile-cards .metric-card:nth-child(even) {
-    background-color: #fff !important;
-  }
-  .metric-card {
-    padding: 0.5rem;
-    min-height: 100px;
-  }
-  .display-number {
-    font-size: 1.8rem;
-  }
-  .charts-grid {
-    grid-template-columns: 1fr;
-  }
-  .chart-card {
-    height: 200px;
-  }
-}
-
-/* iPad mini: dispositivos entre 600px e 768px – layout igual ao mobile */
-@media (min-width: 600px) and (max-width: 768px) {
-  .dashboard-content {
-    margin-left: 0 !important;
-    padding: 5rem 0.5rem 1.5rem;
-  }
-}
-
-/* iPad Air: dispositivos entre 769px e 1024px */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .dashboard-content {
-    position: relative;
-    z-index: 1;
-    margin-left: 20rem; /* Evita sobreposição da Sidebar */
-    padding-top: 2rem;
-  }
-}
-
-/* Responsividade adicional para telas maiores */
-@media (min-width: 1025px) {
-  .dashboard-content {
-    padding-left: 2rem;
-    padding-right: 2rem;
-    padding-top: 2rem;
-  }
 }
 </style>
