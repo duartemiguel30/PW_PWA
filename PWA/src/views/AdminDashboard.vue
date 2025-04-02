@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <SidebarMenu />
-    <div class="dashboard-content">
+    <div class="dashboard-content container mx-auto">
       <div v-if="auditoriasData.length > 0" class="filter-container">
         <label for="audit-filter">Estado</label>
         <select id="audit-filter" v-model="filtroSelecionado">
@@ -79,20 +79,18 @@ export default {
 </script>
 
 <style scoped>
-
 .dashboard-container {
   display: flex;
-  flex-direction: column;
   min-height: 100vh;
   font-family: 'Helvetica Neue', Arial, sans-serif;
   background-color: #f8f9fa;
 }
 
 .dashboard-content {
-  padding: 2rem;
   flex: 1;
-  max-width: 75rem;
-  margin: 2rem auto;
+  padding: 2rem;
+  margin-left: 2rem;
+  max-width: calc(100% - 5rem);
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -136,17 +134,19 @@ export default {
   text-decoration: underline;
 }
 
+/* Utiliza grid responsivo para ocupar mais itens conforme o espaço disponível */
 .audit-list {
   display: grid;
   margin-top: 1rem;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
+  gap: 0.5rem; /* Espaço reduzido entre itens */
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
   justify-content: center;
 }
 
+/* Ajustes responsivos */
 @media (max-width: 1024px) {
   .audit-list {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
   }
 }
 
