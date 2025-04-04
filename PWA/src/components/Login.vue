@@ -1,151 +1,74 @@
+<!-- src/components/Login.vue -->
 <template>
   <div class="auth-container">
-    <div class="auth-left">
-      <div class="auth-box">
-        <h2>Sign in</h2>
-        <input type="email" placeholder="Email" v-model="email" />
-        <input type="password" placeholder="Password" v-model="password" />
-        <button @click="login">Sign In</button>
-        <p>
-          Ainda não tens uma conta?
-          <router-link to="/register">Regista-te</router-link>
-        </p>
-      </div>
+    <div class="auth-box">
+      <h2>Iniciar Sessão</h2>
+      <button @click="loginWithGoogle" class="google-button">
+        Entrar com o Google
+      </button>
     </div>
-    <div class="auth-right"></div>
   </div>
 </template>
 
 <script>
+import { auth, provider, signInWithPopup } from '../firebase';
+import { useRouter } from 'vue-router';
+
 export default {
-  data() {
-    return {
-      email: '',
-      password: '',
+  setup() {
+    const router = useRouter();
+
+    const loginWithGoogle = async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        localStorage.setItem('isAuthenticated', true);
+        localStorage.setItem('loggedUser', JSON.stringify({
+          name: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL
+        }));
+        router.push('/admin-dashboard');
+      } catch (error) {
+        console.error("Erro ao autenticar com o Google:", error);
+      }
     };
-  },
-  methods: {
-    login() {
-      const adminEmail = 'admin@admin.com';
-      const adminPassword = '1234';
 
-      if (this.email === adminEmail && this.password === adminPassword) {
-        localStorage.setItem('isAuthenticated', true);
-        localStorage.setItem('isAdmin', true);
-        // Guarda as informações do admin
-        localStorage.setItem('loggedUser', JSON.stringify({ name: 'Admin', email: adminEmail }));
-        this.$router.push('/admin-dashboard');
-        return;
-      }
-
-      const users = JSON.parse(localStorage.getItem('users')) || [];
-      const user = users.find(u => u.email === this.email && u.password === this.password);
-
-      if (user) {
-        localStorage.setItem('isAuthenticated', true);
-        // Guarda as informações do usuário que fez login
-        localStorage.setItem('loggedUser', JSON.stringify(user));
-        this.$router.push('/admin-dashboard');
-      } else {
-        alert('Credenciais inválidas!');
-      }
-    },
-  },
+    return { loginWithGoogle };
+  }
 };
 </script>
 
 <style scoped>
 .auth-container {
   display: flex;
-  height: 100vh;
-}
-
-.auth-left {
-  flex: 1;
-  display: flex;
   justify-content: center;
   align-items: center;
-  background-color: white;
+  height: 100vh;
+  background-color: #f5f5f5;
 }
 
 .auth-box {
   padding: 20px;
   border-radius: 10px;
+  background-color: white;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
   width: 300px;
 }
 
-input {
+.google-button {
   width: 100%;
   padding: 10px;
-  margin: 5px 0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  background: rgb(41, 95, 4);
+  background-color: #db4437;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
 }
 
-p {
-  margin-top: 10px;
-}
-
-@media (max-width: 768px) {
-  .auth-container {
-    flex-direction: column;
-  }
-
-  .auth-left {
-    background-image: url('/src/assets/slider-image.jpg');
-    background-position: center;
-    background-size: cover;
-    width: 100%;
-    height: 100%;
-    padding: 40px 20px;
-    box-sizing: border-box;
-    border-radius: 0;
-    text-align: center;
-  }
-
-  .auth-right {
-    display: none;
-  }
-
-  .auth-box {
-    width: 100%;
-    max-width: 400px;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: none;
-  }
-}
-
-@media (min-width: 769px) {
-  .auth-right {
-    background-image: url('/src/assets/slider-image.jpg');
-    background-size: cover;
-    background-position: center;
-    flex: 1;
-  }
-
-  .auth-box {
-    width: 80%;
-    max-width: 400px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
-    z-index: 10;
-  }
+.google-button:hover {
+  background-color: #c1351d;
 }
 </style>
