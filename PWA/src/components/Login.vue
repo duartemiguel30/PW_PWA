@@ -2,7 +2,7 @@
 <template>
   <div class="auth-container">
     <div class="auth-box">
-      <h2>Iniciar Sessão</h2>
+      <h3>Iniciar Sessão</h3>
       <button @click="loginWithGoogle" class="google-button">
         Entrar com o Google
       </button>
@@ -41,6 +41,8 @@ export default {
 
 <style scoped>
 .auth-container {
+  background: url('@/assets/slider-image.jpg') no-repeat center center;
+  background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -60,7 +62,7 @@ export default {
 .google-button {
   width: 100%;
   padding: 10px;
-  background-color: #db4437;
+  background-color:rgb(101, 197, 101);
   color: white;
   border: none;
   border-radius: 5px;
@@ -69,6 +71,6 @@ export default {
 }
 
 .google-button:hover {
-  background-color: #c1351d;
+  background-color: #90EE90;
 }
 </style>

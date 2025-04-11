@@ -331,6 +331,8 @@ export default {
   background: #f0f0f0;
   overflow-x: hidden;
   overflow-y: auto;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 @media (min-width: 769px) {
   .dashboard-container {

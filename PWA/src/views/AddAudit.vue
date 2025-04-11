@@ -320,7 +320,7 @@ export default {
   justify-content: center;
   min-height: 100vh;
   padding: 1rem;
-  background-color: #ffffff;
+  background: #f0f0f0;
 }
 
 .form-container {
