@@ -1,158 +1,198 @@
 <template>
   <div class="dashboard-container">
     <SidebarMenu />
-    <div class="dashboard-content container mx-auto">
-      <div v-if="auditoriasData.length > 0" class="filter-container">
-        <label for="audit-filter">Estado</label>
-        <select id="audit-filter" v-model="filtroSelecionado">
-          <option value="abertas">Abertas</option>
-          <option value="fechadas">Fechadas</option>
-        </select>
+    <div class="dashboard-content">
+
+      <!-- HEADER -->
+      <div class="dashboard-header">
+        <div class="stats">
+          <div class="stat-item">
+            <strong>{{ countAbertas }}</strong>
+            <span>Abertas</span>
+          </div>
+          <div class="stat-item">
+            <strong>{{ countFechadas }}</strong>
+            <span>Concluídas</span>
+          </div>
+        </div>
+        <div class="toggle-group">
+          <label class="switch">
+            <input type="checkbox" v-model="mostrarAbertas">
+            <span class="slider"></span>
+          </label>
+          <span class="toggle-label">
+            {{ mostrarAbertas ? "Mostrando Abertas" : "Mostrando Concluídas" }}
+          </span>
+        </div>
       </div>
 
+      <!-- SEM RESULTADOS -->
       <div v-if="auditoriasFiltradas.length === 0" class="no-audit-message">
         Nenhuma auditoria encontrada.
         <router-link to="/admin-add-audit">Adicione uma aqui.</router-link>
       </div>
 
+      <!-- LISTA DE CARDS -->
       <div class="audit-list">
         <AuditItem
           v-for="auditoria in auditoriasFiltradas"
           :key="auditoria.id"
           :auditoria="auditoria"
-          @edit="handleEdit"
-          @update="handleUpdate"
-          @conclude="handleConclude"
+          @update="carregarAuditorias"
         />
       </div>
+
     </div>
   </div>
 </template>
 
 <script>
-import SidebarMenu from '@/components/SidebarMenu.vue';
-import AuditItem from '@/components/AuditItem.vue';
+import SidebarMenu from '@/components/SidebarMenu.vue'
+import AuditItem    from '@/components/AuditItem.vue'
 
 export default {
-  name: "AdminDashboard",
-  components: {
-    SidebarMenu,
-    AuditItem,
-  },
+  name: 'AdminDashboard',
+  components: { SidebarMenu, AuditItem },
   data() {
     return {
       auditoriasData: [],
-      filtroSelecionado: "abertas",
-    };
+      mostrarAbertas: true,
+    }
   },
   computed: {
-    auditoriasFiltradas() {
-      return this.auditoriasData.filter(a =>
-        this.filtroSelecionado === "abertas" ? a.status === "aberta" : a.status === "terminada"
-      );
+    // Conta qualquer que NÃO seja Concluída
+    countAbertas() {
+      return this.auditoriasData.filter(a => a.estado !== 'Concluída').length
     },
+    countFechadas() {
+      return this.auditoriasData.filter(a => a.estado === 'Concluída').length
+    },
+    auditoriasFiltradas() {
+      if (this.mostrarAbertas) {
+        // mostra Pendente *e* Aberto
+        return this.auditoriasData.filter(a => a.estado !== 'Concluída')
+      } else {
+        return this.auditoriasData.filter(a => a.estado === 'Concluída')
+      }
+    }
   },
   mounted() {
-    this.carregarAuditorias();
+    this.carregarAuditorias()
   },
   methods: {
     carregarAuditorias() {
-      this.auditoriasData = JSON.parse(localStorage.getItem("auditorias")) || [];
-    },
-    handleEdit(id) {
-      console.log("Editar auditoria com id:", id);
-    },
-    handleUpdate(auditoria) {
-      this.carregarAuditorias();
-    },
-    handleConclude(auditoria) {
-      const index = this.auditoriasData.findIndex(a => a.id === auditoria.id);
-      if (index !== -1) {
-        this.auditoriasData[index].status = "terminada";
-        localStorage.setItem("auditorias", JSON.stringify(this.auditoriasData));
-        this.carregarAuditorias();
-        console.log("Auditoria concluída:", auditoria);
-      }
-    },
-  },
-};
+      const user = JSON.parse(localStorage.getItem('loggedUser')) || {}
+      const emailLogado = user.email || ''
+      const peritos = JSON.parse(localStorage.getItem('peritos')) || []
+      const peritoLogado = peritos.find(p => p.email === emailLogado)
+      const nomePerito = peritoLogado ? peritoLogado.nome : ''
+      const reports = JSON.parse(localStorage.getItem('reports')) || []
+      this.auditoriasData = nomePerito
+        ? reports.filter(r => r.perito === nomePerito)
+        : []
+    }
+  }
+}
 </script>
 
 <style scoped>
 .dashboard-container {
   display: flex;
   min-height: 100vh;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
   background: #f0f0f0;
 }
-
 .dashboard-content {
+  --content-padding: 1rem;
   flex: 1;
-  padding: 2rem;
-  margin-left: 2rem;
-  max-width: calc(100% - 5rem);
-  background: #f0f0f0;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.filter-container {
   display: flex;
+  flex-direction: column;
+  padding: var(--content-padding);
+  overflow: auto;
+  transition: margin 0.2s, padding 0.2s;
+}
+@media (min-width: 769px) {
+  .dashboard-content {
+    margin-left: 5rem;
+    --content-padding: 1rem;
+  }
+}
+@media (max-width: 768px) {
+  .dashboard-content {
+    margin-left: 0;
+    margin-bottom: 4rem;
+    --content-padding: 0;
+  }
+}
+.dashboard-header {
+  background: #023b1c;
+  color: #fff;
+  padding: 1rem;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
-  margin-bottom: 1.5rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  border-radius: 8px;
 }
-
-.filter-container label {
+@media (max-width: 768px) {
+  .dashboard-header {
+    width: 100vw;
+    left: calc(-1 * var(--content-padding));
+    border-radius: 0;
+    margin-top: 0;
+  }
+}
+.stats { display: flex; gap: 1rem; }
+.stat-item { text-align: center; }
+.stat-item strong { display: block; font-size: 1.25rem; }
+.toggle-group { display: flex; align-items: center; }
+.switch {
+  position: relative; width: 42px; height: 24px;
   margin-right: 0.5rem;
-  font-size: 0.9rem;
-  color: #333;
 }
-
-.filter-container select {
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background-color: #fafafa;
-  font-size: 0.9rem;
-  outline: none;
-  transition: border-color 0.2s;
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; inset: 0;
+  background-color: #a3d9a5;
+  border-radius: 24px;
+  transition: .2s;
 }
-
-.filter-container select:focus {
-  border-color: #007bff;
+.slider:before {
+  content: "";
+  position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .2s;
 }
-
+input:checked + .slider {
+  background-color: #4caf50;
+}
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+.toggle-label { font-size: .9rem; }
+.audit-list {
+  display: flex;
+  flex-direction: column;  /* torna cada AuditItem full-width */
+  gap: 1rem;
+}
 .no-audit-message {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   text-align: center;
-  margin-top: 2rem;
+  margin: 2rem 0;
 }
-
 .no-audit-message a {
-  color: #007bff;
+  color: hsl(213,56%,52%);
   text-decoration: underline;
 }
-
-/* Utiliza grid responsivo para ocupar mais itens conforme o espaço disponível */
-.audit-list {
-  display: grid;
-  margin-top: 1rem;
-  gap: 0.5rem; /* Espaço reduzido entre itens */
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  justify-content: center;
+@media (max-width: 768px) {
+  .dashboard-header { flex-direction: column; gap: .5rem; text-align: center; }
+  .stats { justify-content: center; }
 }
-
-/* Ajustes responsivos */
-@media (max-width: 1024px) {
-  .audit-list {
-    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  }
-}
-
-@media (max-width: 600px) {
-  .audit-list {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 480px) {
+  .stat-item strong { font-size: 1.1rem; }
 }
 </style>

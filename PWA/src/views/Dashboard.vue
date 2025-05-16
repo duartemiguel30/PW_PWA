@@ -3,10 +3,11 @@
     <SidebarMenu />
     <div class="dashboard-content container">
       <div class="alert alert-info text-center w-100 greeting-msg" role="alert">
-        Bem vindo de volta, {{ user.name }}!
+        Bem-vindo de volta, {{ user.name }}!
       </div>
 
       <template v-if="isDesktop">
+        <!-- Top Row -->
         <div class="top-row row w-100 mb-3">
           <div class="faturacao-chart-highlight col-md-8">
             <canvas ref="faturacaoChart"></canvas>
@@ -23,6 +24,7 @@
           </div>
         </div>
 
+        <!-- Gráficos Secundários -->
         <div class="charts-grid desktop-charts row w-100 mb-2">
           <div class="chart-card col-md-6 mb-3 mb-md-0">
             <canvas ref="auditoriasChart"></canvas>
@@ -32,8 +34,8 @@
           </div>
         </div>
 
+        <!-- Lista de Utilizadores -->
         <div class="users-list-container w-100">
-          <h3>Utilizadores Registados</h3>
           <table class="users-list table table-borderless">
             <tbody>
               <tr v-for="(userItem, index) in usersList" :key="index" class="user-row">
@@ -51,16 +53,18 @@
       </template>
 
       <template v-else>
-        <div class="mobile-nav fixed-top d-flex justify-content-between align-items-center px-3 py-2 bg-white shadow-sm">
+        <!-- Navegação Móvel -->
+        <div class="mobile-nav fixed-top d-flex justify-content-between align-items-center px-3 py-2 shadow-sm">
           <button @click="prevPage" :disabled="currentPage === 0" class="nav-arrow btn btn-link p-0">
             &#9664;
           </button>
-          <h2 class="page-title flex-grow-1 text-center m-0 text-dark">{{ currentPageTitle }}</h2>
+          <h2 class="page-title flex-grow-1 text-center m-0 text-white">{{ currentPageTitle }}</h2>
           <button @click="nextPage" :disabled="currentPage === tabs.length - 1" class="nav-arrow btn btn-link p-0">
             &#9654;
           </button>
         </div>
 
+        <!-- Tab Auditorias -->
         <div v-if="currentPage === 0" class="tab-content mt-3 pt-3">
           <div v-if="auditoriasData.length === 0" class="no-audit-message">
             Nenhuma auditoria ativa.
@@ -78,7 +82,7 @@
               <p class="display-number">{{ auditoriasAbertas }}</p>
             </div>
             <div class="metric-card mobile-card col-6">
-              <h6 class="card-title">Terminadas</h6>
+              <h6 class="card-title">Concluídas</h6>
               <p class="display-number">{{ auditoriasTerminadas }}</p>
             </div>
           </div>
@@ -90,6 +94,7 @@
           <div class="mobile-bottom-padding"></div>
         </div>
 
+        <!-- Tab Faturação -->
         <div v-else-if="currentPage === 1" class="tab-content faturacao-tab mt-3 pt-3">
           <div class="cards-grid mobile-cards row">
             <div class="metric-card mobile-card col-6">
@@ -97,7 +102,6 @@
               <p class="display-number">{{ faturacaoTotal.toFixed(2) }}</p>
             </div>
             <div class="metric-card mobile-card col-6">
-              <h6 class="card-title">Utilizadores registados</h6>
               <p class="display-number">{{ totalUtilizadores }}</p>
             </div>
           </div>
@@ -117,15 +121,16 @@
 </template>
 
 <script>
-import { Chart, registerables } from "chart.js";
-import SidebarMenu from "@/components/SidebarMenu.vue";
+import { Chart, registerables } from 'chart.js';
+import SidebarMenu from '@/components/SidebarMenu.vue';
 Chart.register(...registerables);
 
 export default {
+  name: 'AdminDashboard',
   components: { SidebarMenu },
   data() {
     return {
-      tabs: ["Auditorias", "Faturação & Materiais"],
+      tabs: ['Auditorias', 'Faturação & Materiais'],
       currentPage: 0,
       auditoriasData: [],
       totalUtilizadores: 0,
@@ -135,7 +140,7 @@ export default {
       chartAuditorias: null,
       chartFaturacao: null,
       chartMateriais: null,
-      user: { name: "Utilizador" },
+      user: { name: 'Utilizador' },
     };
   },
   computed: {
@@ -143,10 +148,10 @@ export default {
       return this.auditoriasData.length;
     },
     auditoriasAbertas() {
-      return this.auditoriasData.filter(a => a.status === "aberta").length;
+      return this.auditoriasData.filter(a => a.estado === 'Aberto').length;
     },
     auditoriasTerminadas() {
-      return this.auditoriasData.filter(a => a.status === "terminada").length;
+      return this.auditoriasData.filter(a => a.estado === 'Concluída').length;
     },
     currentPageTitle() {
       return this.tabs[this.currentPage];
@@ -154,173 +159,107 @@ export default {
   },
   mounted() {
     this.carregarDados();
-    window.addEventListener("resize", this.handleResize);
+    window.addEventListener('resize', this.handleResize);
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener('resize', this.handleResize);
   },
   watch: {
     currentPage() {
-      this.$nextTick(() => {
-        this.mostrarGraficos();
-      });
+      this.$nextTick(() => this.mostrarGraficos());
     }
   },
   methods: {
     handleResize() {
       this.isDesktop = window.innerWidth > 768;
-      this.$nextTick(() => {
-        this.mostrarGraficos();
-      });
+      this.$nextTick(() => this.mostrarGraficos());
     },
     carregarDados() {
-      const auditoriasSalvas = JSON.parse(localStorage.getItem("auditorias")) || [];
-      this.auditoriasData = auditoriasSalvas;
+      const reports = JSON.parse(localStorage.getItem('reports') || '[]');
+      this.auditoriasData = reports;
 
-      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
       this.totalUtilizadores = users.length;
       this.usersList = users;
 
-      const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      if (loggedUser) {
-        this.user = loggedUser;
-      }
+      const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
+      if (loggedUser.name) this.user = loggedUser;
 
       this.faturacaoTotal = this.auditoriasData.reduce(
-        (acc, auditoria) => acc + (auditoria.custoEstimado || 0),
+        (acc, a) => acc + (a.custoEstimado || 0),
         0
       );
+
       this.mostrarGraficos();
     },
     mostrarGraficos() {
-      if (this.chartAuditorias) {
-        this.chartAuditorias.destroy();
-      }
+
+      if (this.chartAuditorias) this.chartAuditorias.destroy();
       if (this.$refs.auditoriasChart) {
-        this.chartAuditorias = new Chart(this.$refs.auditoriasChart.getContext("2d"), {
-          type: "bar",
-          data: {
-            labels: ["Total", "Em Aberto", "Terminadas"],
-            datasets: [{
-              label: "Auditorias",
-              data: [this.totalAuditorias, this.auditoriasAbertas, this.auditoriasTerminadas],
-              backgroundColor: ["#0d6efd", "#ffc107", "#198754"],
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { color: "#333", font: { size: 12 } }
-              },
-              x: {
-                ticks: { color: "#333", font: { size: 12 } }
-              }
-            }
-          }
-        });
-      }
-
-      if (this.chartFaturacao) {
-        this.chartFaturacao.destroy();
-      }
-      if (this.$refs.faturacaoChart) {
-        const config = { fill: false, borderColor: "#90EE90", backgroundColor: "transparent" };
-        this.chartFaturacao = new Chart(this.$refs.faturacaoChart.getContext("2d"), {
-          type: "line",
-          data: {
-            labels: this.auditoriasData.map(a => a.dataInicio),
-            datasets: [{
-              label: "Faturação (€)",
-              data: this.auditoriasData.map(a => a.custoEstimado || 0),
-              borderColor: config.borderColor,
-              borderWidth: 2,
-              fill: config.fill,
-              backgroundColor: config.backgroundColor,
-              tension: 0
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { color: "#ffffff", font: { size: 12 } }
-              },
-              x: {
-                ticks: { color: "#ffffff", font: { size: 12 } }
-              }
+        this.chartAuditorias = new Chart(
+          this.$refs.auditoriasChart.getContext('2d'),
+          {
+            type: 'bar',
+            data: {
+              labels: ['Total', 'Abertas', 'Concluídas'],
+              datasets: [{
+                label: 'Auditorias',
+                data: [
+                  this.totalAuditorias,
+                  this.auditoriasAbertas,
+                  this.auditoriasTerminadas
+                ],
+                backgroundColor: ['#0d6efd', '#ffc107', '#198754']
+              }]
             },
-            plugins: {
-              legend: {
-                labels: {
-                  color: "#ffffff",
-                  font: { size: 12 }
-                }
-              }
-            }
+            options: { responsive: true, maintainAspectRatio: false }
           }
-        });
+        );
       }
 
-      if (this.chartMateriais) {
-        this.chartMateriais.destroy();
+      if (this.chartFaturacao) this.chartFaturacao.destroy();
+      if (this.$refs.faturacaoChart) {
+        this.chartFaturacao = new Chart(
+          this.$refs.faturacaoChart.getContext('2d'),
+          {
+            type: 'line',
+            data: {
+              labels: this.auditoriasData.map(a => a.data),
+              datasets: [{
+                label: 'Faturação (€)',
+                data: this.auditoriasData.map(a => a.custoEstimado || 0),
+                borderColor: '#90EE90',
+                backgroundColor: 'transparent',
+                tension: 0.2
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          }
+        );
       }
+
+      if (this.chartMateriais) this.chartMateriais.destroy();
       if (this.$refs.materiaisChart) {
-        const materialsCount = {};
-        this.auditoriasData.forEach(auditoria => {
-          if (auditoria.materialNecessario && Array.isArray(auditoria.materialNecessario)) {
-            auditoria.materialNecessario.forEach(material => {
-              const trimmed = material.trim();
-              if (trimmed) {
-                materialsCount[trimmed] = (materialsCount[trimmed] || 0) + 1;
-              }
-            });
-          }
+        const count = {};
+        this.auditoriasData.forEach(a => {
+          (a.materiais || []).forEach(m => {
+            count[m] = (count[m] || 0) + 1;
+          });
         });
-        const labels = Object.keys(materialsCount);
-        const data = Object.values(materialsCount);
-        this.chartMateriais = new Chart(this.$refs.materiaisChart.getContext("2d"), {
-          type: "pie",
-          data: {
-            labels,
-            datasets: [{
-              label: "Materiais Necessários",
-              data,
-              backgroundColor: labels.map((_, i) => {
-                const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
-                return colors[i % colors.length];
-              })
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                labels: {
-                  color: "#333",
-                  font: { size: 12 }
-                }
-              }
-            }
+        const labels = Object.keys(count);
+        const data = Object.values(count);
+        this.chartMateriais = new Chart(
+          this.$refs.materiaisChart.getContext('2d'),
+          {
+            type: 'pie',
+            data: { labels, datasets: [{ data, backgroundColor: ['#FF6384','#36A2EB','#FFCE56'] }] },
+            options: { responsive: true, maintainAspectRatio: false }
           }
-        });
+        );
       }
     },
-    prevPage() {
-      if (this.currentPage > 0) {
-        this.currentPage--;
-      }
-    },
-    nextPage() {
-      if (this.currentPage < this.tabs.length - 1) {
-        this.currentPage++;
-      }
-    }
+    prevPage() { if (this.currentPage > 0) this.currentPage--; },
+    nextPage() { if (this.currentPage < this.tabs.length - 1) this.currentPage++; }
   }
 };
 </script>
@@ -346,6 +285,7 @@ export default {
 }
 
 .dashboard-content {
+  padding-top: 5rem;
   flex: 1;
   max-width: 1100px;
   padding: 3rem 1.5rem 1.5rem;
@@ -359,7 +299,6 @@ export default {
 
 @media (max-width: 768px) {
   .dashboard-content {
-    padding-top: 3rem;
   }
   .greeting-msg {
     margin-bottom: 0.5rem;
@@ -409,6 +348,10 @@ export default {
 }
 
 @media (max-width: 768px) {
+
+  .dashboard-container {
+    min-height: 100vh;
+  }
   .mobile-cards {
     display: flex;
     flex-wrap: wrap;
@@ -433,6 +376,7 @@ export default {
   background-color: #003366 !important;
 }
 .chart-card canvas {
+  min-height: 200px;
   width: 100% !important;
   height: 100% !important;
 }
@@ -480,7 +424,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: #fff;
+  background-color: #023b1c;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   min-height: 4rem;
 }
@@ -496,9 +440,10 @@ export default {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #008000 !important;
+  background-color: ffffff;
   padding: 0.25rem 0.5rem;
 }
+
 .nav-arrow:disabled {
   opacity: 0.3;
   cursor: default;
