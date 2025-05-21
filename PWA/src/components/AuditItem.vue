@@ -1,17 +1,14 @@
 <template>
   <div class="card">
-    <!-- Imagem no topo -->
     <div v-if="fotoData" class="card-image">
       <img :src="fotoData" alt="Foto da Auditoria" />
     </div>
 
-    <!-- Cabeçalho com título e badge -->
     <div class="card-header">
       <h3 class="card-title">{{ auditoria.nome }}</h3>
       <span :class="badgeClass" class="badge">{{ statusLabel }}</span>
     </div>
 
-    <!-- Conteúdo principal com informações adicionais -->
     <div class="card-content">
       <p><strong>Localidade:</strong> {{ auditoria.local }}</p>
       <p><strong>Tipo:</strong> {{ auditoria.tipo_ocorrencia }}</p>
@@ -24,7 +21,6 @@
       </template>
     </div>
 
-    <!-- Barra de botões modernizados -->
     <div class="card-actions">
       <button
         v-if="status === 'Pendente'"
@@ -48,10 +44,8 @@
       >Concluir</button>
     </div>
 
-    <!-- Formulário inline repaginado -->
     <transition name="slide">
       <form v-if="editing" class="edit-form" @submit.prevent="savePlan">
-        <!-- inputs estilizados -->
         <div class="field">
           <label>Foto (opcional):</label>
           <input type="file" @change="onFileChange" accept="image/*" />

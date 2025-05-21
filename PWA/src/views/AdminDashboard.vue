@@ -3,7 +3,6 @@
     <SidebarMenu />
     <div class="dashboard-content">
 
-      <!-- HEADER -->
       <div class="dashboard-header">
         <div class="stats">
           <div class="stat-item">
@@ -26,13 +25,11 @@
         </div>
       </div>
 
-      <!-- SEM RESULTADOS -->
       <div v-if="auditoriasFiltradas.length === 0" class="no-audit-message">
         Nenhuma auditoria encontrada.
         <router-link to="/admin-add-audit">Adicione uma aqui.</router-link>
       </div>
 
-      <!-- LISTA DE CARDS -->
       <div class="audit-list">
         <AuditItem
           v-for="auditoria in auditoriasFiltradas"
@@ -60,7 +57,6 @@ export default {
     }
   },
   computed: {
-    // Conta qualquer que NÃO seja Concluída
     countAbertas() {
       return this.auditoriasData.filter(a => a.estado !== 'Concluída').length
     },
@@ -69,7 +65,6 @@ export default {
     },
     auditoriasFiltradas() {
       if (this.mostrarAbertas) {
-        // mostra Pendente *e* Aberto
         return this.auditoriasData.filter(a => a.estado !== 'Concluída')
       } else {
         return this.auditoriasData.filter(a => a.estado === 'Concluída')
@@ -176,7 +171,7 @@ input:checked + .slider:before {
 .toggle-label { font-size: .9rem; }
 .audit-list {
   display: flex;
-  flex-direction: column;  /* torna cada AuditItem full-width */
+  flex-direction: column;  
   gap: 1rem;
 }
 .no-audit-message {

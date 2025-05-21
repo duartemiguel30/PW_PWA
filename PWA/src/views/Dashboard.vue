@@ -7,7 +7,6 @@
       </div>
 
       <template v-if="isDesktop">
-        <!-- Top Row -->
         <div class="top-row row w-100 mb-3">
           <div class="faturacao-chart-highlight col-md-8">
             <canvas ref="faturacaoChart"></canvas>
@@ -24,7 +23,6 @@
           </div>
         </div>
 
-        <!-- Gráficos Secundários -->
         <div class="charts-grid desktop-charts row w-100 mb-2">
           <div class="chart-card col-md-6 mb-3 mb-md-0">
             <canvas ref="auditoriasChart"></canvas>
@@ -34,7 +32,6 @@
           </div>
         </div>
 
-        <!-- Lista de Utilizadores -->
         <div class="users-list-container w-100">
           <table class="users-list table table-borderless">
             <tbody>
@@ -53,7 +50,6 @@
       </template>
 
       <template v-else>
-        <!-- Navegação Móvel -->
         <div class="mobile-nav fixed-top d-flex justify-content-between align-items-center px-3 py-2 shadow-sm">
           <button @click="prevPage" :disabled="currentPage === 0" class="nav-arrow btn btn-link p-0">
             &#9664;
@@ -64,7 +60,6 @@
           </button>
         </div>
 
-        <!-- Tab Auditorias -->
         <div v-if="currentPage === 0" class="tab-content mt-3 pt-3">
           <div v-if="auditoriasData.length === 0" class="no-audit-message">
             Nenhuma auditoria ativa.
@@ -94,7 +89,6 @@
           <div class="mobile-bottom-padding"></div>
         </div>
 
-        <!-- Tab Faturação -->
         <div v-else-if="currentPage === 1" class="tab-content faturacao-tab mt-3 pt-3">
           <div class="cards-grid mobile-cards row">
             <div class="metric-card mobile-card col-6">

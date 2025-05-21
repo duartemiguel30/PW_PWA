@@ -14,7 +14,7 @@ export default defineConfig({
     },
   },
   server: {
-    host: '127.0.0.1', // <- Define o IP aqui
-    port: 5500,         // (opcional) Define a porta se quiseres
+    host: '127.0.0.1', 
+    port: 5500,        
   }
 })
