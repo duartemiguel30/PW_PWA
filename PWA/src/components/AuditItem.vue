@@ -9,12 +9,11 @@
     />
 
     <div class="card-body p-3">
-      <!-- Header + Primeiro detalhe -->
       <div class="d-flex justify-content-between align-items-start mb-2">
         <div>
           <h5 class="card-title mb-1">{{ auditoria.nome }}</h5>
           <p class="small mb-0">
-            <i v-if="auditoria.tipo_ocorrencia === 'Eletrecidade'" class="bi bi-lightning-charge-fill"></i>
+            <i v-if="auditoria.tipo_ocorrencia === 'Eletricidade'" class="bi bi-lightning-charge-fill"></i>
             {{ auditoria.local }} • {{ auditoria.data }}
           </p>
         </div>
@@ -30,7 +29,6 @@
         </span>
       </div>
 
-      <!-- Demais Detalhes -->
       <p class="mb-1 small" v-if="status !== 'Pendente'">
         <i class="bi bi-clock"></i>
         {{ form.horaChegada }} – {{ form.horaSaida }}
@@ -43,8 +41,21 @@
         {{ form.materiais.join(', ') }}
       </p>
 
-      <!-- Ações -->
       <div class="d-flex gap-2">
+        <button
+          v-if="status === 'Pendente'"
+          class="btn btn-sm btn-outline-success flex-fill"
+          @click="accept"
+        >
+          <i class="bi bi-check-circle"></i> Aceitar
+        </button>
+        <button
+          v-if="status === 'Pendente'"
+          class="btn btn-sm btn-outline-danger flex-fill"
+          @click="refuse"
+        >
+          <i class="bi bi-x-circle"></i> Recusar
+        </button>
         <button
           v-if="status === 'Aberto'"
           class="btn btn-sm btn-outline-primary flex-fill"
@@ -61,7 +72,6 @@
         </button>
       </div>
 
-      <!-- Formulário compacto -->
       <transition name="slide">
         <form v-if="editing" class="mt-3" @submit.prevent="savePlan">
           <div class="mb-2">
@@ -123,7 +133,6 @@
 </template>
 
 <script>
-/* Importar CSS do Bootstrap e Bootstrap Icons */
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
@@ -148,6 +157,12 @@ export default {
   methods: {
     reloadReports() {
       this.$emit('update');
+    },
+    accept() {
+      this.updateEstado('Aberto');
+    },
+    refuse() {
+      this.updateEstado('Concluída');
     },
     confirmFinish() {
       if (window.confirm('Concluir auditoria?')) {
