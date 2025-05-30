@@ -1,0 +1,21 @@
+{
+  "name": "Eyes Everywhere - Peritos",
+  "short_name": "Eyes Everywhere",
+  "start_url": "/admin-dashboard",
+  "display": "standalone",
+  "background_color": "#023b1c",
+  "theme_color": "#023b1c",
+  "icons": [
+  {
+    "src": "/favicon.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  },
+  {
+    "src": "/favicon.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }
+]
+}
+
